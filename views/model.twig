@@ -1,107 +1,331 @@
-{% extends "crud::page" %}
-
+{% extends "crud::wizard/page" %}
 {% block head %}
-    <style>
-        .wizard-big.wizard > .content {
-            min-height: 700px;
-        }
-    </style>
+    <link href="{{ 'css/wizard.css'|asset }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
+
     {% if not alert %}
-          <div class="col col-lg-6">
-
-              {% set tables = wizard.getTables(1) %}
-              {#{% if not tables|length %}#}
-                  {#<div class="alert alert-danger" role="alert">No tables found. Define database structure first.</div>#}
-              {#{%  else %}#}
-                {% if  not wizard.modelsDefined() %}
-                 <h2>Step 1. Name the Models.</h2>
-                <form method="post">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-                    {%  else %}
-                        <h2>Step 2. Configure each Models.</h2>
-                {% endif %}
-
-                    <table class="table">
-                        <tr>
-                            <th width="150">Table</th>
-                            <th>Model name</th>
-                            <th width="0">Actions</th>
-                        </tr>
-                        {% set pivot_tables = wizard.getAllPivotTables() %}
-                        {% for table in tables %}
-                            {% if table not in pivot_tables %}
-                                <tr>
-
-                                    <td>{{ table }}</td>
-                                    <td>
-
-                                        {% if wizard.modelsDefined() %}
-                                        <form action="{{ route('wizard_model', table) }}" id="form_{{ table }}" method="get">
-                                            {% if wizard.getModelConfig(table) %}
-                                                <input type="text" class="form-control" name="models[{{ table }}]"
-                                                       value="{{ wizard.getModelConfig(table).name }}" disabled/>
-                                            {% else %}
-                                                <input type="text" class="form-control" name="model"
-                                                       placeholder="Enter model name * " value="{{  studly_case(table) }}"  required/>
-                                            {% endif %}
-                                        </form>
-                                        {% else %}
-                                        <div class="input-group" style="width: 250px" >
-                                            <input type="text" class="form-control" placeholder="{{ studly_case(table) }}" id="models_{{ table }}" name="models[{{ table }}]"/>
-                                            <div class="input-group-addon"><a href="#" class="text-success" onclick="$('#models_{{ table }}').val($('#models_{{ table }}').attr('placeholder'))"  title="Name as '{{ studly_case(table) }}' " ><i class="fa fa-thumbs-up"></i></a></div>
-                                        </div>
-                                        {% endif %}
-
-                                    </td>
-                                    <td>
-                                        {% if wizard.getModelConfig(table) %}
-                                            <a class="btn btn-success"
-                                               href="{{ route('wizard_model', table) }}">Edit </a>
-                                        {% else %}
-                                            {% if  wizard.modelsDefined() %}
-                                            <input type="submit" form="form_{{ table }}" class="btn btn-primary" value="Create model and edit"/>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-
-                                </tr>
-                          {% endif %}
-                        {% endfor %}
-                    </table>
-                    {% if not wizard.modelsDefined() %}
-                            <input type="submit" class="btn btn-success" value="Save">
-                    {% endif %}
-                    {% if  not wizard.modelsDefined() %}
-                </form>
-              <br /><br />
-
-                    <table class="table table-striped">
-                    <tr class="info">
-                        <td width="150"><h3 class="text-info">Add new table</h3></td>
-                        <td valign="middle" style="padding-top: 15px;">
-                            <form method="post" id="new_table" action="{{ route('wizard_migrate_create') }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-                                <input type="text" class="form-control" placeholder="table_name"  name="table_name" required/>
-                            </form>
-                        </td>
-                        <td width="200" valign="middle" style="padding-top: 15px;">
-                            <input type="submit" form="new_table" class="btn btn-danger" value="Create"/>
-                        </td>
-                    </tr>
-                    </table>
-
-                {% endif %}
+        <!-- template for the Modal component -->
+        <script type="x/template" id="modal-template">
+            <div class="modal-mask" @click="close" v-show="show" transition="modal">
+                <div class="modal-container" @click.stop>
+                    <slot></slot>
+                </div>
             </div>
-    {#{% endif %}#}
+        </script>
+
+        <!-- template for the NewPostModal component -->
+        <script type="x/template" id="relation-modal-template">
+            <modal :show.sync="show" :on-close="close">
+                <div class="card">
+                    <span class="label label-primary pull-right"><% relation.relation %></span>
+
+                    <div style="padding:10px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Title *</label>
+                                <input type="text" class="form-control" v-model="relation.title" placeholder="Title *"
+                                       required>
+
+                            </div>
+                            <div class="col-md-6">
+                                <label>Attribute name (snake_case)*</label>
+                                <input type="text" class="form-control" v-model="relation.key"
+                                       placeholder="Attribute name (snake_case)*" required>
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label>Model</label>
+                                <select class="form-control default_select" v-model="relation.model" required>
+                                    <option value="">Choose relation model</option>
+                                    {% for m in wizard.getAvailableModels() %}
+                                        <option value="{{ m|snake_case }}">{{ m }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"  v-model="relation.editable"> Editable
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Foreign key<br/>
+                                    <select class="form-control default_select" data-attr="ref_column"
+                                            v-model="relation.ref_column" required>
+                                        <option value="">Choose relation model first</option>
+                                    </select>
+                                </label>
+                                <br/>
+                                <label>On delete</label>
+                                <select class="form-control default_select" v-model="relation.on_delete">
+                                    {% for av, atext in wizard.getOndeleteActions() %}
+                                        <option value="{{ av }}">{{ atext }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row"  v-show="relation.editable">
+
+                                <div class="col-md-6">
+                                    <select v-model="relation.form_field" class="form-control default_select">
+                                        <option value="">Choose field type</option>
+                                        {% for k,v in wizard.getAvailableRelationFieldTypes(multiple) %}
+                                            <option value="{{ k }}">{{ v }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Data provider
+                                        method {{ wiz_macros.help('Config/Relations#options_providers') }}</label>
+                                    <select v-model="relation.find">
+                                        <option value="">No method</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" v-model="relation.required">
+                                            Required
+                                        </label>
+                                    </div>
+                                </div>
+                             </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer text-right">
+                    <button class="modal-default-button" @click="save()">
+                        Save
+                    </button>
+                </div>
+            </modal>
+        </script>
+
+        <div :class="{ 'container-fluid in': model_loaded }" class="container-fluid fade" id="wizard">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- Nav tabs -->
+                    <div class="card">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#general" aria-controls="home" role="tab"
+                                                                      data-toggle="tab">General settings</a></li>
+                            <li role="presentation"><a href="#relations" aria-controls="profile" role="tab"
+                                                       data-toggle="tab">Relations</a></li>
+
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="general">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="name">Model name *</label>
+                                            <input type="text" class="form-control" id="name" data-model_name="1"
+                                                   name="name" v-model="model.name" disabled/>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="is_tree" value="1" name="is_tree"
+                                                       v-model="model.tree"/>
+                                                <b>Model is tree <span class="text-danger">If the table doesn't contain `tree_path`, `tree_order`,
+                                    `tree_pid`, `tree_depth` columns - a migration will be created</span></b>
+                                            </label>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="acl">Acl</label>
+                                            {#<input type="text" class="form-control" id="acl"  name="acl"  value="{{ model.acl }}" />#}
+                                            <select class="form-control default_select" id="acl" name="acl"
+                                                    v-model="model.acl" style="width:250px;">
+                                                <option value="">Choose acl</option>
+                                                {% for acl, acl_title in config.acl.acls %}
+                                                    <option value="{{ acl }}">{{ acl_title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="ent_name">Entity name *</label>
+                                            <input type="text" class="form-control" id="ent_name" name="ent_name"
+                                                   v-model="model.ent_name" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="title_field">Title field</label>
+                                            <select class="form-control default_select" id="title_field"
+                                                    name="title_field" v-model="model.title_field" style="width:250px;">
+                                                <option value="">Choose database table field</option>
+                                                {% for f in wizard.getTableColumns(table) %}
+                                                    <option value="{{ f }}">{{ f }}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <div class="help-block">DB table field that serves as title or name of the
+                                                entity
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="ent_name_r">(Russian only) Model entity name (Родительный
+                                                падеж)</label>
+                                            <input type="text" class="form-control" id="ent_name_r" name="ent_name_r"
+                                                   v-model="model.ent_name_r"/>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="ent_name_v">(Russian only) Model entity name (Винительный
+                                                падеж)</label>
+                                            <input type="text" class="form-control" id="ent_name_v" name="ent_name_v"
+                                                   v-model="model.ent_name_v"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dialog_width">Modal dialog width (optional)</label>
+                                            <input type="text" class="form-control" id="dialog_width"
+                                                   name="dialog_width" v-model="model.dialog_width"/>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="dialog_width">Audit trail. Track model changes</label>
+                                            <select name="track_history" id="track_history"
+                                                    class="form-control default_select" style="width:250px;"
+                                                    v-model="model.track_history">
+                                                {% for op_val, op_text in wizard.getTrackHistoryOptions() %}
+                                                    <option value="{{ op_val }}">{{ op_text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="relations">
+
+                                <label>
+
+                                    <select class="form-control default_select" id="rtype"
+                                            style="display:inline; width:250px;">
+                                        <option value="">Choose relation type</option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_HAS_MANY') }}">
+                                            Has many
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_HAS_ONE') }}">
+                                            Has one
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_BELONGS_TO') }}">
+                                            Belongs to
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_BELONGS_TO_MANY') }}">
+                                            Belongs to many
+                                        </option>
+                                    </select>
+                                    <a href="#" class="btn btn-success"><i class="fa fa-plus"></i> Add relation</a>
+                                </label>
+                                <hr/>
+                                <br/>
+                                <table class="table table-striped">
+                                    <tr>
+
+                                        <th width="50px">Type</th>
+                                        <th width="150px">Attribute name</th>
+                                        <th width="150px">Edit Type</th>
+                                        <th>Title</th>
+                                        <th width="150px;">Relation model</th>
+                                        <th width="100px"></th>
+                                    </tr>
+                                    <tr v-for="(key, rel) in model.fields | filterBy isRelation">
+                                        <td><span class="text-success">
+                                            <img :title="rel.relation"
+                                                 :src="'/vendor/crud/images/icons/'+ rel.relation+ '.png'"/></span></td>
+                                        <td><% key %></td>
+                                        <td><% rel.type %></td>
+                                        <td><% rel.title %></td>
+                                        <td><% rel.model %></td>
+                                        <td><a class="text-info" style="font-size: 20px;" href="#"><i
+                                                        class="fa fa-edit"> </i></a>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <a class="text-danger" href="#" @click="deleteField(key)"
+                                               style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
+                                        </td>
+                                    </tr>
+
+                                    </tr>
+                                </table>
+
+                                <hr/>
+                                <label>
+
+                                    <select class="form-control default_select" v-model="new_relation.relation"
+                                            style="display:inline; width:250px;">
+                                        <option value="">Choose relation type</option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_HAS_MANY') }}">
+                                            Has many
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_HAS_ONE') }}">
+                                            Has one
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_BELONGS_TO') }}">
+                                            Belongs to
+                                        </option>
+                                        <option value="{{ constant('\\Skvn\\Crud\\Models\\CrudModel::RELATION_BELONGS_TO_MANY') }}">
+                                            Belongs to many
+                                        </option>
+                                    </select>
+                                    <a href="#" class="btn btn-success" @click="addRelation"><i class="fa fa-plus"></i>
+                                        Add relation</a>
+                                </label>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" value="{{ table }}" id="current_table" v-model="table"/>
+
+            <relation-modal :relation.sync="new_relation" :show.sync="show_new_relation"></relation-modal>
+
+        <pre>
+            <% $data | json %>
+        </pre>
+
+
+        </div>
+
     {% else %}
 
         <div class="alert alert-danger" role="alert">{{ alert }}</div>
+
     {% endif %}
+
+
+{% endblock %}
+
+
+
+{% block modals %}
+    <script src="{{ 'js/vue/wizard.js'|asset }}"></script>
+
 {% endblock %}
 
 {% block bc %}
-    <h1>Define models</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ route('wizard_index') }}">Models index</a></li>
+        <li>Configure model "{{ model.name }}"</li>
+    </ol>
+
 {% endblock %}
+
+

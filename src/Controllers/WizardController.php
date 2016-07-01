@@ -46,7 +46,7 @@ class WizardController extends Controller {
         {
              return $this->createModels();
         }
-        return view('crud::wizard/index', ['wizard'=>$this->wizard]);
+        return view('crud-wizard::index', ['wizard'=>$this->wizard]);
     }
 
 
@@ -83,7 +83,7 @@ class WizardController extends Controller {
         }
 
         $modelObj = CrudModel::createInstance($model['name']);
-        return view('crud::wizard/model', [
+        return view('crud-wizard::model', [
                 'table'=>$table,
                 'model'=>$model,
                 'modelObj'=>$modelObj,
@@ -95,7 +95,7 @@ class WizardController extends Controller {
     function menu()
     {
 
-        return view('crud::wizard/menu');
+        return view('crud-wizard::menu');
     }
 
     function createModels()
@@ -115,18 +115,18 @@ class WizardController extends Controller {
     }
 
 
-    function getTableColumns($table)
-    {
-
-        return $this->wizard->getTableColumns($table);
-    }
-
-
-    function getModelColumns($model)
-    {
-
-        return $this->wizard->getAllModelColumns($model);
-    }
+//    function getTableColumns($table)
+//    {
+//
+//        return $this->wizard->getTableColumns($table);
+//    }
+//
+//
+//    function getModelColumns($model)
+//    {
+//
+//        return $this->wizard->getAllModelColumns($model);
+//    }
 
 
     function getWizardMethod($method)
@@ -136,7 +136,7 @@ class WizardController extends Controller {
 
     function getFieldRowTpl($field_name)
     {
-        return view('crud::wizard/blocks/fields/field_row', ['f'=>$field_name]);
+        return view('crud-wizard::blocks/fields/field_row', ['f'=>$field_name]);
     }
     
     function migrationCreate()
