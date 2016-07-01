@@ -1,0 +1,17 @@
+{
+  "name": "crud-wizard",
+  "homepage": "https://github.com/skvn/crud-wizard",
+  "authors": [
+    "Vitaly Nikolenko <vit@webstandart.ru>"
+  ],
+  "description": "Wizard for Laravel CRUD",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "vue": "latest",
+    "vue-resource": "latest"
+
+  }
+}

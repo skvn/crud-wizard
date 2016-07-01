@@ -1,0 +1,25 @@
+{
+    "name": "skvn/crud-wizard",
+    "description": "Wizard for skvn/crud package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vitaly Nikolenko",
+            "email": "vit@webstandart.ru"
+        },
+        {
+            "name": "Sergey Kulyamin",
+            "email": "kulyamin_sergey@mail.ru"
+        }
+    ],
+    "require": {
+            "php": ">=7.0.0",
+            "skvn/crud": "dev-master"
+	},
+
+    "autoload": {
+        "psr-4": {
+            "Skvn\\CrudWizard\\": "src"
+		}
+    }
+}

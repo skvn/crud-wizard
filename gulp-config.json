@@ -1,0 +1,19 @@
+{
+	"paths": {
+
+      "dist_js": "public/js",
+
+      "vendor_js": [
+          "resources/bower_components/jquery/dist/jquery.min.js",
+          "resources/bower_components/bootstrap/dist/js/bootstrap.min.js"
+
+      ],
+      "vendor_js_src": [
+        "resources/bower_components/jquery/dist/jquery.js",
+        "resources/bower_components/bootstrap/dist/js/bootstrap.js"
+      ]
+
+
+
+	}
+}
