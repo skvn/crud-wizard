@@ -791,7 +791,8 @@ class Wizard
     {
         return
             [
-                'columns'=> $this->getAllModelColumns($model)
+                'columns'=> $this->getAllModelColumns($model),
+                'find_methods' => $this->getAvailableSelectOptionsProviders($model)
             ];
 
     }

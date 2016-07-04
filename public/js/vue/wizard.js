@@ -10,7 +10,7 @@ Vue.component('Modal', {
         }
     },
     ready: function () {
-        document.addEventListener("keydown", (e) => {
+        document.addEventListener("keydown", function (e){
             if (this.show && e.keyCode == 27) {
             this.onClose();
         }
@@ -21,14 +21,14 @@ Vue.component('Modal', {
 
 Vue.component('relation-modal', {
     template: '#relation-modal-template',
-    props: ['show', 'relation'],
+    props: ['show', 'edit', 'relation'],
     methods: {
         close: function () {
             this.show = false;
-            this.initEmptyRelation();
+            this.$dispatch('empty_relation');
         },
         save: function () {
-            // Insert AJAX call here...
+            this.$dispatch('save_relation');
             this.close();
         }
     },
@@ -59,6 +59,7 @@ new Vue({
         },
         current_relation: {},
         show_new_relation: false,
+        edit_relation: false,
         model_loaded:false,
         model: {},
         table: "",
@@ -73,11 +74,21 @@ new Vue({
         this.fetchModel();
     },
 
+    events: {
+        'empty_relation': function () {
+            this.initEmptyRelation();
+        },
+        'save_relation': function () {
+            this.saveRelation();
+        },
+
+    },
+
     methods: {
 
         initEmptyRelation: function () {
 
-            this.current_relation =  JSON.parse(JSON.stringify(this.empty_relation));
+            this.current_relation =  this.cloneObject(this.empty_relation);
 
         },
         isRelation: function (row) {
@@ -96,6 +107,20 @@ new Vue({
 
             this.show_new_relation = true;
         },
+        
+        editRelation: function (key) {
+            this.current_relation = this.model.fields[key];
+            this.current_relation.key = key;
+            this.edit_relation = true;
+        },
+        saveRelation: function () {
+            delete this.current_relation.model_obj;
+            if (this.show_new_relation)
+            {
+                Vue.set(this.model.fields,this.current_relation.key, this.cloneObject(this.current_relation));
+            }
+        },
+
         deleteField: function(key) {
             if (confirm('Delete '+key+'?'))
             {
@@ -139,6 +164,9 @@ new Vue({
             var page_url = this.base_url +'getTableColumns'
             this.fillContainerWithRemoteData(container, page_url, {params:{args:[table]}});
 
+        },
+        cloneObject: function (obj) {
+            return JSON.parse(JSON.stringify(obj));
         }
 
 

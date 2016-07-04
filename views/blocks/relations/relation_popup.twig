@@ -16,7 +16,7 @@
                     <div class="col-md-6">
                         <label>Attribute name (snake_case)*</label>
                         <input type="text" class="form-control" v-model="relation.key"
-                               placeholder="Attribute name (snake_case)*" required>
+                               placeholder="Attribute name (snake_case)*" required :readonly="edit">
 
                     </div>
 
@@ -30,12 +30,12 @@
                         </select>
                     </div>
                     <div class="col-md-6" v-if="relation.relation=='belongsTo'">
-                    <label>Local key
-                        <select class="form-control default_select" v-model="relation.local_key" required >
+                    <label>Field (local key)
+                        <select class="form-control default_select" v-model="relation.field" required >
                             <option value="">Choose Local key</option>
                             {% for f in wizard.getTableColumns(table) %}
                                 {% if f != 'id' %}
-                                    <option value="{{ f }}" {{ f == rel.field ?'selected' }}>{{ f }}</option>
+                                    <option value="{{ f }}">{{ f }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
@@ -103,7 +103,7 @@
                 <div class="row"  v-show="relation.editable">
 
                     <div class="col-md-6">
-                        <select v-model="relation.form_field" class="form-control default_select">
+                        <select v-model="relation.type" class="form-control default_select">
                             <option value="">Choose field type</option>
                             {% for k,v in wizard.getAvailableRelationFieldTypes(multiple) %}
                                 <option value="{{ k }}">{{ v }}</option>
@@ -115,7 +115,9 @@
                             method {{ wiz_macros.help('Config/Relations#options_providers') }}</label>
                         <select v-model="relation.find">
                             <option value="">No method</option>
-
+                            <option v-for="row in relation.model_obj.find_methods" v-bind:value="row.name">
+                                <% row.name %> (<% row.description %>)
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -130,8 +132,6 @@
 
             </div>
         </div>
-
-        </script>
         </div>
 
         <div class="modal-footer text-right">

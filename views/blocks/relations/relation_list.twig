@@ -16,7 +16,7 @@
         <td><% rel.type %></td>
         <td><% rel.title %></td>
         <td><% rel.model %></td>
-        <td><a class="text-info" style="font-size: 20px;" href="#"><i
+        <td><a class="text-info" style="font-size: 20px;" href="#" @click="editRelation(key)"><i
                         class="fa fa-edit"> </i></a>
             &nbsp;&nbsp;&nbsp;
             <a class="text-danger" href="#" @click="deleteField(key)"
