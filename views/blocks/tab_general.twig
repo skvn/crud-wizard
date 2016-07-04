@@ -1,0 +1,86 @@
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label for="name">Model name *</label>
+            <input type="text" class="form-control" id="name" data-model_name="1"
+                   name="name" v-model="model.name" disabled/>
+        </div>
+
+
+        <div class="form-group">
+            <label class="checkbox-inline">
+                <input type="checkbox" id="is_tree" value="1" name="is_tree"
+                       v-model="model.tree"/>
+                <b>Model is tree <span class="text-danger">If the table doesn't contain `tree_path`, `tree_order`,
+                                    `tree_pid`, `tree_depth` columns - a migration will be created</span></b>
+            </label>
+        </div>
+
+
+        <div class="form-group">
+            <label for="acl">Acl</label>
+            {#<input type="text" class="form-control" id="acl"  name="acl"  value="{{ model.acl }}" />#}
+            <select class="form-control default_select" id="acl" name="acl"
+                    v-model="model.acl" style="width:250px;">
+                <option value="">Choose acl</option>
+                {% for acl, acl_title in config.acl.acls %}
+                    <option value="{{ acl }}">{{ acl_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ent_name">Entity name *</label>
+            <input type="text" class="form-control" id="ent_name" name="ent_name"
+                   v-model="model.ent_name" required/>
+        </div>
+        <div class="form-group">
+            <label for="title_field">Title field</label>
+            <select class="form-control default_select" id="title_field"
+                    name="title_field" v-model="model.title_field" style="width:250px;">
+                <option value="">Choose database table field</option>
+                {% for f in wizard.getTableColumns(table) %}
+                    <option value="{{ f }}">{{ f }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="help-block">DB table field that serves as title or name of the
+                entity
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label for="ent_name_r">(Russian only) Model entity name (Родительный
+                падеж)</label>
+            <input type="text" class="form-control" id="ent_name_r" name="ent_name_r"
+                   v-model="model.ent_name_r"/>
+        </div>
+
+        <div class="form-group">
+            <label for="ent_name_v">(Russian only) Model entity name (Винительный
+                падеж)</label>
+            <input type="text" class="form-control" id="ent_name_v" name="ent_name_v"
+                   v-model="model.ent_name_v"/>
+        </div>
+        <div class="form-group">
+            <label for="dialog_width">Modal dialog width (optional)</label>
+            <input type="text" class="form-control" id="dialog_width"
+                   name="dialog_width" v-model="model.dialog_width"/>
+        </div>
+
+    </div>
+    <div class="col-lg-6">
+        <div class="form-group">
+            <label for="dialog_width">Audit trail. Track model changes</label>
+            <select name="track_history" id="track_history"
+                    class="form-control default_select" style="width:250px;"
+                    v-model="model.track_history">
+                {% for op_val, op_text in wizard.getTrackHistoryOptions() %}
+                    <option value="{{ op_val }}">{{ op_text }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>

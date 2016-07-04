@@ -1,0 +1,12 @@
+<label>
+
+    <select class="form-control default_select" id="rtype" v-model.sync="current_relation.relation"
+            style="display:inline; width:250px;">
+        <option value="">Choose relation type</option>
+        {%  for rel in wizard.getRelations() %}
+            <option value="{{ rel }}">{{ rel }}</option>
+        {% endfor %}
+    </select>
+    <a href="#" class="btn btn-success" @click="addRelation"><i class="fa fa-plus"></i>
+        Add relation</a>
+</label>

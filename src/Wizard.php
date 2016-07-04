@@ -765,6 +765,34 @@ class Wizard
 
         ];
 
+    }//
+
+
+    /**
+     * Get list of possible relations
+     *
+     * @return array
+     */
+    public function getRelations()
+    {
+        return [
+            'hasMany',
+            'belongsTo',
+            'belongsToMany',
+            'hasOne',
+            'belongsTo',
+            'hasManyFiles',
+            'hasFile'
+        ];
     }
 
+    
+    public function getRelationModelData($model)
+    {
+        return
+            [
+                'columns'=> $this->getAllModelColumns($model)
+            ];
+
+    }
 }
