@@ -35,7 +35,12 @@ router.redirect({
     '*': '/general'
 })
 
+router.beforeEach(function (transition) {
 
+    $('.nav-pills').find('li').removeClass('active');
+    $('.nav-pills').find('li[data-rel="'+transition.to.path+'"]').addClass('active');
+    transition.next()
+});
 
 router.start({
     store,

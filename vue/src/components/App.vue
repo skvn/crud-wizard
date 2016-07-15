@@ -8,10 +8,9 @@
                 <!-- Nav tabs -->
                 <div class="card">
                     <div class="pull-left" style="width: 90%">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a href="#" v-link="'general'">General settings</a></li>
-                            <li role="presentation"><a href="#" v-link="'relations'">Relations</a></li>
-
+                        <ul class="nav nav-pills">
+                            <li role="presentation" data-rel="/general"><a  v-link="'general'">General settings</a></li>
+                            <li role="presentation" data-rel="/relations"><a  v-link="'relations'">Relations</a></li>
                         </ul>
                     </div>
                     <div class="pull-right">
