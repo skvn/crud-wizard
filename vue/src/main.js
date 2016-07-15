@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 
 import App from './components/App.vue'
 import General from './components/General.vue'
+import Relations from './components/Relations.vue'
 
 import store from './vuex/store'
 
@@ -21,7 +22,12 @@ export var router = new Router()
 router.map({
     '/general': {
         component: General
-    }
+
+    },
+
+    '/relations': {
+        component: Relations
+    },
 
 })
 

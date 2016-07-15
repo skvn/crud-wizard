@@ -1,7 +1,7 @@
 <template>
     <div role="tabpanel" class="tab-pane active" id="general">
 
-        <form id="vf">
+        <form class="validate">
         <div class="row">
             <div class="col-lg-6">
                 <div class="form-group">

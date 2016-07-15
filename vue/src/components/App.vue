@@ -84,7 +84,7 @@
         created () {
             this.fetchConfig(this.table);
             this.fetchModel(this.table);
-            
+
 
         },
 
@@ -93,9 +93,17 @@
         methods: {
 
             saveModel() {
-                var form = $('form').first();
-                var bootstrapValidator = form.data('bootstrapValidator');
-                console.log(bootstrapValidator.isValid());
+                var form = $('form.validate').first();
+                if (form.length) {
+                    var bootstrapValidator = form.data('bootstrapValidator');
+                    if (bootstrapValidator && !bootstrapValidator.isValid()) {
+                        return false;
+                    }
+                }
+
+
+
+
             }
         }
 
