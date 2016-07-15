@@ -22,6 +22,12 @@ Vue.component('Modal', {
 Vue.component('relation-modal', {
     template: '#relation-modal-template',
     props: ['show', 'edit', 'relation'],
+    created: function () {
+
+      this.$on('show_relation_modal', function () {
+          this.show = true;
+      })
+    },
     methods: {
         close: function () {
             this.show = false;
@@ -31,7 +37,8 @@ Vue.component('relation-modal', {
             this.$dispatch('save_relation');
             this.close();
         }
-    },
+    }
+
 
 });
 
@@ -45,12 +52,11 @@ new Vue({
             'relation':'',
             'model': '',
             'on_delete':'',
-            'ref_column':'',
+            'field':'',
             'editable':false,
-            'form_field':'',
+            'type':'',
             'find': '',
-            'model_obj':{'columns':[]},
-            'local_key':'',
+            'model_obj':{'columns':[],'find_methods':[]},
             'pivot':0,
             'pivot_table':'',
             'pivot_self_key':'',
@@ -58,8 +64,6 @@ new Vue({
             'pivot_columns': []
         },
         current_relation: {},
-        show_new_relation: false,
-        edit_relation: false,
         model_loaded:false,
         model: {},
         table: "",
@@ -67,7 +71,6 @@ new Vue({
     },
 
     created: function () {
-
         this.initEmptyRelation();
     },
     ready: function() {
@@ -86,17 +89,6 @@ new Vue({
 
     methods: {
 
-        initEmptyRelation: function () {
-
-            this.current_relation =  this.cloneObject(this.empty_relation);
-
-        },
-        isRelation: function (row) {
-            if (row.$value.relation)
-            {
-                return row;
-            }
-        },
 
         addRelation: function (){
             if (this.current_relation.relation == '')
@@ -105,20 +97,11 @@ new Vue({
               return false;
             }
 
-            this.show_new_relation = true;
+            this.$broadcast('show_relation_modal');
+
         },
-        
-        editRelation: function (key) {
-            this.current_relation = this.model.fields[key];
-            this.current_relation.key = key;
-            this.edit_relation = true;
-        },
-        saveRelation: function () {
-            delete this.current_relation.model_obj;
-            if (this.show_new_relation)
-            {
-                Vue.set(this.model.fields,this.current_relation.key, this.cloneObject(this.current_relation));
-            }
+        cloneObject: function (obj) {
+            return JSON.parse(JSON.stringify(obj));
         },
 
         deleteField: function(key) {
@@ -128,14 +111,19 @@ new Vue({
             }
 
         },
+        editRelation: function (key) {
+            this.current_relation = this.model.fields[key];
+            this.current_relation.key = key;
+            this.$broadcast('show_relation_modal');
 
+        },
         fetchModel: function () {
             var vm = this;
-            var page_url = vm.base_url +'getModelConfig'
+            var page_url = vm.base_url +'getModelConfig';
             this.$http.get(page_url, {params:{args:[vm.table]}})
                 .then(function (response) {
                     console.log(response.data);
-                    vm.$set('model', response.data)
+                    vm.$set('model', response.data);
                     vm.$set('model_loaded', true)
                 });
         },
@@ -165,9 +153,36 @@ new Vue({
             this.fillContainerWithRemoteData(container, page_url, {params:{args:[table]}});
 
         },
-        cloneObject: function (obj) {
-            return JSON.parse(JSON.stringify(obj));
+
+        initEmptyRelation: function () {
+
+            this.current_relation =  this.cloneObject(this.empty_relation);
+
+        },
+        isRelation: function (row) {
+            if (row.$value.relation)
+            {
+                return row;
+            }
+        },
+        saveRelation: function () {
+            delete this.current_relation.model_obj;
+            Vue.set(this.model.fields,this.current_relation.key, this.cloneObject(this.current_relation));
+
+        },
+
+        saveModel: function () {
+            var model_json = JSON.stringify(this.model);
+            //this.model_loaded = false;
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            this.$http.post('/admin/crud_setup/'+this.table, {model_json:model_json})
+                .then(function (response) {
+                    console.log(response.data);
+                });
         }
+
+
+
 
 
     },

@@ -45,7 +45,7 @@
                     <div class="col-md-6" v-if="relation.relation=='hasMany' || relation.relation=='hasOne'">
                         <label>Foreign key</label>
                             <select class="form-control default_select"
-                                    v-model="relation.ref_column" required>
+                                    v-model="relation.field" required>
                                 <option value="">Choose relation model first</option>
                                 <option v-for="col in relation.model_obj.columns" v-bind:value="col">
                                     <% col %>

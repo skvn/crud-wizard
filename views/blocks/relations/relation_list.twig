@@ -11,7 +11,7 @@
     <tr v-for="(key, rel) in model.fields | filterBy isRelation">
         <td><span class="text-success">
                                             <img :title="rel.relation"
-                                                 :src="'/vendor/crud/images/icons/'+ rel.relation+ '.png'"/></span></td>
+                                                 :src="'/vendor/crud-wizard/images/icons/'+ rel.relation+ '.png'"/></span></td>
         <td><% key %></td>
         <td><% rel.type %></td>
         <td><% rel.title %></td>

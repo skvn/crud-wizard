@@ -725,7 +725,7 @@ class Wizard
     public function getOndeleteActions()
     {
         return [
-            ''=>'No action',
+            '' => 'No action',
             'delete'=>'Cascade delete',
             'set_null'=>'Set null',
             
@@ -795,5 +795,14 @@ class Wizard
                 'find_methods' => $this->getAvailableSelectOptionsProviders($model)
             ];
 
+    }
+
+    public function getWizardConfig($table)
+    {
+        return [
+            'acls' => $this->app['config']['acl.acls'],
+            'table_columns' => $this->getTableColumns($table),
+            'track_history_options' => $this->getTrackHistoryOptions(),
+        ];
     }
 }

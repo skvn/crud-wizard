@@ -5,80 +5,24 @@
 
 {% block content %}
     {% if not alert %}
-        <!-- template for the Modal component -->
-        <script type="x/template" id="modal-template">
-            <div class="modal-mask" @click="close" v-show="show" transition="modal">
-                <div class="modal-container" @click.stop>
-                    <slot></slot>
-                </div>
-            </div>
-        </script>
-
-        {%  include 'crud-wizard::blocks/relations/relation_popup.twig' %}
-
-
-        <div id="wizard">
-
-            <h1 v-show="!model_loaded" ><i  class="fa fa-spinner fa-spin"></i></h1>
-
-        <div :class="{ 'container-fluid in ': model_loaded }" class="container-fluid fade">
-            <div class="row">
-                <div class="col-md-12">
-
-                    <!-- Nav tabs -->
-                    <div class="card">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a href="#general" aria-controls="home" role="tab"
-                                                                      data-toggle="tab">General settings</a></li>
-                            <li role="presentation"><a href="#relations" aria-controls="profile" role="tab"
-                                                       data-toggle="tab">Relations</a></li>
-
-                        </ul>
-
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane active" id="general">
-                            {%  include  'crud-wizard::blocks/tab_general.twig' %}
-
-                            </div>
-                            <div role="tabpanel" class="tab-pane" id="relations">
-                                {% include 'crud-wizard::blocks/relations/add_button.twig' %}
-                                <hr/>
-                                <br/>
-                                {% include 'crud-wizard::blocks/relations/relation_list.twig' %}
-                                <hr/>
-                                {% include 'crud-wizard::blocks/relations/add_button.twig' %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" value="{{ table }}" id="current_table" v-model="table"/>
-
-            <relation-modal :relation.sync="current_relation"  :show.sync="show_new_relation || edit_relation"   :edit="edit_relation"></relation-modal>
-
-        <pre>
-            <% $data | json %>
-        </pre>
-
-
-        </div>
+        <div id="app">
+            <app></app>
         </div>
 
     {% else %}
-
         <div class="alert alert-danger" role="alert">{{ alert }}</div>
-
     {% endif %}
-
 
 {% endblock %}
 
 
 
 {% block modals %}
-    <script src="{{ 'js/vue/wizard.js'|asset(0,'crud-wizard') }}"></script>
+{#<script src="{{ 'js/vue/wizard.js'|asset(0,'crud-wizard') }}"></script>#}
+<script>
+    var table = "{{ table }}";
+</script>
+<script src="/vue/dist/build.js"></script>
 
 {% endblock %}
 

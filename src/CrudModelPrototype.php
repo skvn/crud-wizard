@@ -85,7 +85,7 @@ class CrudModelPrototype
 
         if (empty($config_data['table']))
         {
-            throw new WizardException('Table  for model prototype is not defined');
+            throw new \Skvn\CrudWizard\Exceptions\WizardException('Table  for model prototype is not defined');
         }
 
 
@@ -101,18 +101,19 @@ class CrudModelPrototype
         $this->path = app_path($folder);
         $this->config_path = config_path('crud').'/'.$this->table.'.php';
         @mkdir(dirname($this->config_path));
-        if (file_exists($this->config_path))
-        {
-            $this->old_config_data = include $this->config_path;
-            $this->config_data = array_merge($this->old_config_data,$this->config_data);
-            //var_dump($this->config_data);
-        }
+//        if (file_exists($this->config_path))
+//        {
+//            $this->old_config_data = include $this->config_path;
+//            $this->config_data = array_merge($this->old_config_data,$this->config_data);
+//            //var_dump($this->config_data);
+//        }
 
         $this->processRelations();
-        $this->processFiles();
-        $this->processFields();
-        $this->processLists();
-        $this->processFilters();
+
+//        $this->processFiles();
+//        $this->processFields();
+//        $this->processLists();
+//        $this->processFilters();
         $this->prepareConfigData();
 
     }//
@@ -123,90 +124,88 @@ class CrudModelPrototype
     private function processRelations()
     {
 
-        if (!empty($this->config_data['relations']))
-        foreach ($this->config_data['relations'] as $rel)
+
+        foreach ($this->config_data['fields'] as $key=> $rel)
         {
+            if (!empty($rel['relation'])) {
 
-            $rel_arr = [
-                'relation' => $rel['type'],
-                'title' => $rel['title'],
-                'model' => $rel['model'],
-                'relation_name' => trim($rel['name']),
+                print_r($rel);
+                $rel_arr = [
+                    'relation' => $rel['relation'],
+                    'title' => $rel['title'],
+                    'model' => $rel['model'],
 
-            ];
-
-            //need to record pivot?
-            if ($rel['type'] == 'belongsToMany' && $rel['pivot'] == '0')
-            {
-
-                $pdata = [];
-
-                $tables = [
-                    snake_case($this->config_data['name']),
-                    snake_case($rel['model'])
                 ];
 
-                sort($tables);
-                $pdata['table_name'] = implode('_', $tables);
-                $pdata['self_key'] = snake_case($this->config_data['name']).'_id';
-                $pdata['foreign_key'] = snake_case($rel['model']).'_id';
-                $this->migrations_data['pivot'][] = $pdata;
-                $rel_arr['pivot_table'] = $pdata['table_name'];
-                $rel_arr['pivot_self_key'] = $pdata['self_key'];
-                $rel_arr['pivot_foreign_key'] = $pdata['foreign_key'];
+                //need to record pivot?
+                if ($rel['relation'] == 'belongsToMany' && isset($rel['pivot']) && $rel['pivot'] == '0') {
 
-            } else if ($rel['type'] == 'belongsToMany' && $rel['pivot'] == '1')
-            {
-                $rel_arr['pivot_table'] = $rel['pivot_table'];
-                $rel_arr['pivot_self_key'] = $rel['pivot_self_key'];
-                $rel_arr['pivot_foreign_key'] = $rel['pivot_foreign_key'];
-            }
+                    $pdata = [];
 
-            if (!empty($rel['ref_column']))
-            {
-                $rel_arr['ref_column'] = $rel['ref_column'];
-            }
+                    $tables = [
+                        snake_case($this->config_data['name']),
+                        snake_case($rel['model'])
+                    ];
 
-            if (!empty($rel['editable']))
-            {
-                $rel_arr['editable'] = 1;
-                if (!empty($rel['find']))
-                {
-                    $rel_arr['find'] = $rel['find'];
-                }
-                $rel_arr['type'] = $rel['form_field'];
-                if (!empty($rel['required']))
-                {
-                    $rel_arr['required'] = 1;
+                    sort($tables);
+                    $pdata['table_name'] = implode('_', $tables);
+                    $pdata['self_key'] = snake_case($this->config_data['name']) . '_id';
+                    $pdata['foreign_key'] = snake_case($rel['model']) . '_id';
+                    $this->migrations_data['pivot'][] = $pdata;
+                    $rel_arr['pivot_table'] = $pdata['table_name'];
+                    $rel_arr['pivot_self_key'] = $pdata['self_key'];
+                    $rel_arr['pivot_foreign_key'] = $pdata['foreign_key'];
+
+                } else if ($rel['relation'] == 'belongsToMany' && isset($rel['pivot']) &&  $rel['pivot'] == '1') {
+                    $rel_arr['pivot_table'] = $rel['pivot_table'];
+                    $rel_arr['pivot_self_key'] = $rel['pivot_self_key'];
+                    $rel_arr['pivot_foreign_key'] = $rel['pivot_foreign_key'];
+                } else {
+                    if (!empty($rel['pivot_table']))
+                    {
+                        $rel_arr['pivot_table'] = $rel['pivot_table'];
+                        $rel_arr['pivot_self_key'] = $rel['pivot_self_key'];
+                        $rel_arr['pivot_foreign_key'] = $rel['pivot_foreign_key'];
+                    }
                 }
 
-            }
-
-            if (!empty($rel['local_key'])) {
-
-                $rel_arr['field'] = $rel['local_key'];
-            }
-
-            if (!empty($rel['on_delete'])) {
-
-                $rel_arr['on_delete'] = $rel['on_delete'];
-            }
-
-            $key = $rel_arr['relation_name'];
-            unset($rel_arr['relation_name']);
-
-            if (!empty($rel['sort']))
-            {
-                $sort = json_decode($rel['sort'], true);
-                //\Log :: info($sort, ['browsify' => 1]);
-
-                if (is_array($sort) && count($sort))
-                {
-                    $rel_arr['sort'] = $sort;
+                if (!empty($rel['field'])) {
+                    $rel_arr['field'] = $rel['field'];
                 }
 
+                if (!empty($rel['editable'])) {
+                    $rel_arr['editable'] = 1;
+                    if (!empty($rel['find'])) {
+                        $rel_arr['find'] = $rel['find'];
+                    }
+                    $rel_arr['type'] = $rel['type'];
+
+                    if (!empty($rel['required'])) {
+                        $rel_arr['required'] = 1;
+                    }
+
+                }
+
+                if (!empty($rel['local_key'])) {
+
+                    $rel_arr['field'] = $rel['local_key'];
+                }
+
+                if (!empty($rel['on_delete'])) {
+
+                    $rel_arr['on_delete'] = $rel['on_delete'];
+                }
+
+
+                if (!empty($rel['sort'])) {
+
+                    if (is_array($rel['sort']) && count($rel['sort'])) {
+                        $rel_arr['sort'] = $rel['sort'];
+                    }
+
+                }
+                $this->config_data['fields'][$key] = $rel_arr;
             }
-            $this->config_data['fields'][$key] = $rel_arr;
 
         }
 
@@ -568,12 +567,12 @@ class CrudModelPrototype
     public  function record()
     {
 
-        $this->app['view']->addNamespace('crud_wizard', __DIR__ . '/../../stubs');
-
         $this->recordConfig();
         $this->recordModels();
         $this->recordMigrations();
         $this->migrate();
+
+        return ['success'=>true];
 
 
     }
@@ -593,85 +592,85 @@ class CrudModelPrototype
 
     protected function buildConfig()
     {
-        $conf = [];
-        $conf['name'] = $this->config_data['name'];
-        if (!empty($this->config_data['title_field'])) {
-            $conf['title_field'] = $this->config_data['title_field'];
-        }
-        if (!empty($this->config_data['is_tree']))
-        {
-            if (empty($this->old_config_data['tree'])) {
-                $conf['tree'] =
-                    [
-                        'depth_column' => "tree_level",
-                        'path_column' => "tree_path",
-                        'pid_column' => "tree_pid",
-                        'order_column' => "tree_order"
-                    ];
-            } else {
-                $conf['tree'] = $this->old_config_data['tree'];
-            }
-        }
-        if (!empty($this->config_data['acl']))
-        {
-            $conf['acl'] = $this->config_data['acl'];
-        }
-        if (!empty($this->config_data['ent_name'])) {
-            $conf['ent_name'] = $this->config_data['ent_name'];
-        }
-        if (!empty($this->config_data['ent_name_r'])) {
-            $conf['ent_name_r'] = $this->config_data['ent_name_r'];
-        }
-
-        if (!empty($this->config_data['ent_name_v'])) {
-            $conf['ent_name_v'] = $this->config_data['ent_name_v'];
-        }
-        
-        if (!empty($this->config_data['dialog_width']))
-        {
-            $conf['dialog_width'] = 1000;
-        }
-//        if (!empty($this->config_data['timestamps']))
+//        $conf = [];
+//        $conf['name'] = $this->config_data['name'];
+//        if (!empty($this->config_data['title_field'])) {
+//            $conf['title_field'] = $this->config_data['title_field'];
+//        }
+//        if (!empty($this->config_data['is_tree']))
 //        {
-//            $conf['timestamps'] = true;
-//            $conf['timestamps_type'] = $this->config_data['timestamps'];
+//            if (empty($this->old_config_data['tree'])) {
+//                $conf['tree'] =
+//                    [
+//                        'depth_column' => "tree_level",
+//                        'path_column' => "tree_path",
+//                        'pid_column' => "tree_pid",
+//                        'order_column' => "tree_order"
+//                    ];
+//            } else {
+//                $conf['tree'] = $this->old_config_data['tree'];
+//            }
 //        }
-        if (!empty($this->config_data['track_history']))
-        {
-            $conf['track_history'] = $this->config_data['track_history'];
-        }
-
-
-        if (!empty($this->config_data['list']))
-        {
-            $conf['scopes'] = $this->config_data['list'];
-        }
-
-        if (!empty($this->config_data['form'])) {
-            $conf['form'] = $this->config_data['form'];
-        }
-
-//        if (!empty($this->config_data['tabs'])) {
-//            $conf['tabs'] = $this->config_data['tabs'];
-//            $conf['form_tabbed'] = 1;
+//        if (!empty($this->config_data['acl']))
+//        {
+//            $conf['acl'] = $this->config_data['acl'];
 //        }
-
-
-
-        $conf['fields'] = [];
-
-        if (!empty($this->config_data['fields'])) {
-            foreach ($this->config_data['fields'] as $index => $fdata) {
-                if (!empty($fdata['type']) || !empty($fdata['relation'])) {
-                    $field = [];
-                    foreach ($fdata as $k => $v) {
-                        $field[$k] = $v;
-                    }
-                    $conf['fields'][$index] = $field;
-                }
-            }
-        }
-        return $conf;
+//        if (!empty($this->config_data['ent_name'])) {
+//            $conf['ent_name'] = $this->config_data['ent_name'];
+//        }
+//        if (!empty($this->config_data['ent_name_r'])) {
+//            $conf['ent_name_r'] = $this->config_data['ent_name_r'];
+//        }
+//
+//        if (!empty($this->config_data['ent_name_v'])) {
+//            $conf['ent_name_v'] = $this->config_data['ent_name_v'];
+//        }
+//
+//        if (!empty($this->config_data['dialog_width']))
+//        {
+//            $conf['dialog_width'] = 1000;
+//        }
+////        if (!empty($this->config_data['timestamps']))
+////        {
+////            $conf['timestamps'] = true;
+////            $conf['timestamps_type'] = $this->config_data['timestamps'];
+////        }
+//        if (!empty($this->config_data['track_history']))
+//        {
+//            $conf['track_history'] = $this->config_data['track_history'];
+//        }
+//
+////
+////        if (!empty($this->config_data['scopes']))
+////        {
+////            $conf['scopes'] = $this->config_data[''];
+////        }
+////
+////        if (!empty($this->config_data['form'])) {
+////            $conf['form'] = $this->config_data['form'];
+////        }
+//
+////        if (!empty($this->config_data['tabs'])) {
+////            $conf['tabs'] = $this->config_data['tabs'];
+////            $conf['form_tabbed'] = 1;
+////        }
+//
+//
+//
+//        $conf['fields'] = [];
+//
+//        if (!empty($this->config_data['fields'])) {
+//            foreach ($this->config_data['fields'] as $index => $fdata) {
+//                if (!empty($fdata['type']) || !empty($fdata['relation'])) {
+//                    $field = [];
+//                    foreach ($fdata as $k => $v) {
+//                        $field[$k] = $v;
+//                    }
+//                    $conf['fields'][$index] = $field;
+//                }
+//            }
+//        }
+        return $this->config_data;
     }
 
     /**
@@ -684,14 +683,14 @@ class CrudModelPrototype
         {
             @mkdir($this->path);
             file_put_contents($this->path.'/'.$this->config_data['name'].'.php',
-                $this->app['view']->make('crud_wizard::crud_model_class', ['model'=>$this->config_data])->render()
+                $this->app['view']->make('crud-wizard::stubs/crud_model_class', ['model'=>$this->config_data])->render()
             );
         }
 
         //record base model
         @mkdir($this->path.'/Crud');
         file_put_contents($this->path.'/Crud/'.$this->config_data['name'].'Base.php',
-            $this->app['view']->make('crud_wizard::crud_base_model_class', ['model'=>$this->config_data])->render()
+            $this->app['view']->make('crud-wizard::stubs/crud_base_model_class', ['model'=>$this->config_data])->render()
         );
 
 

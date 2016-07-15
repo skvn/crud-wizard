@@ -55,12 +55,12 @@ class WizardController extends Controller {
         if ($this->request->isMethod('post'))
         {
 
-            $proto = new CrudModelPrototype($this->request->all());
-            $proto->record();
-            //\Log :: info('model recorded', ['browsify' => 1]);
 
-            return redirect(route('wizard_index').'?rnd='.time())->with(['error'=>$proto->error]);
-
+            $data = json_decode($this->request->get('model_json'), 1);
+            $data['table'] = $table;
+            $proto = new CrudModelPrototype($data);
+            return $proto->record();
+            
         }
 
 
