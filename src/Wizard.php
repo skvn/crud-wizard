@@ -292,7 +292,7 @@ class Wizard
      * Get crud models already defined
      * @return array
      */
-    function getAvailableModels()
+    function getAvailableModels($callback=null)
     {
         if (!$this->available_models)
         {
@@ -302,6 +302,11 @@ class Wizard
             {
                 $this->available_models = array_keys($configs);
             }
+        }
+
+        if ($callback) {
+            return array_map($callback,$this->available_models);
+
         }
 
         return $this->available_models;
@@ -450,6 +455,9 @@ class Wizard
                              $types[$control->controlType()] = $control->wizardCaption();
                          }
                     } else {
+                        if ($control->wizardIsForManyRelation()) {
+                            continue;
+                        }
                         $types[$control->controlType()] = $control->wizardCaption();
                     }
 
@@ -776,11 +784,10 @@ class Wizard
     public function getRelations()
     {
         return [
+            'hasOne',
             'hasMany',
             'belongsTo',
             'belongsToMany',
-            'hasOne',
-            'belongsTo',
             'hasManyFiles',
             'hasFile'
         ];
@@ -803,6 +810,24 @@ class Wizard
             'acls' => $this->app['config']['acl.acls'],
             'table_columns' => $this->getTableColumns($table),
             'track_history_options' => $this->getTrackHistoryOptions(),
+            'relation_options' => $this->getRelations(),
+            'all_models' => $this->getAvailableModels('snake_case')
         ];
+    }
+
+    public function isRelationMultiple($relation)
+    {
+        if (in_array($relation,['hasOne','belongsTo']))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getAvailableRelationEditTypes($relation)
+    {
+        return $this->getAvailableRelationFieldTypes($this->isRelationMultiple($relation));
+
     }
 }

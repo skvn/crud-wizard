@@ -5,8 +5,8 @@ Vue.use(Vuex)
 
 const default_model = {
     acl:'',
-        title_field:'',
-        track_history: '',
+    title_field:'',
+    track_history: '',
 };
 
 const state = {
@@ -16,7 +16,6 @@ const state = {
 
 const mutations = {
     SET_MODEL (state, model) {
-
         state.model = Object.assign({},default_model, model);
         console.log(state.model);
 

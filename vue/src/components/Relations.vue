@@ -1,16 +1,6 @@
 <template>
-    <label>
 
-        <select class="form-control default_select" id="rtype" v-model.sync="current_relation.relation"
-                style="display:inline; width:250px;">
-            <option value="">Choose relation type</option>
-            {%  for rel in wizard.getRelations() %}
-            <option value="{{ rel }}">{{ rel }}</option>
-            {% endfor %}
-        </select>
-        <a href="#" class="btn btn-success" @click="addRelation"><i class="fa fa-plus"></i>
-            Add relation</a>
-    </label>
+    <add-relation-btn></add-relation-btn>
 
     <table class="table table-striped">
         <tr>
@@ -39,42 +29,39 @@
         </tr>
 
     </table>
-    <label>
+   <add-relation-btn></add-relation-btn>
 
-        <select class="form-control default_select" id="rtype" v-model.sync="current_relation.relation"
-                style="display:inline; width:250px;">
-            <option value="">Choose relation type</option>
-            {%  for rel in wizard.getRelations() %}
-            <option value="{{ rel }}">{{ rel }}</option>
-            {% endfor %}
-        </select>
-        <a href="#" class="btn btn-success" @click.prevent="addRelation"><i class="fa fa-plus"></i>
-            Add relation</a>
-    </label>
-
-    <relation-modal></relation-modal>
+   <relation-modal></relation-modal>
 
 </template>
 
 <script>
 //    import HeaderComponent from './components/header.vue'
-    import RelationModal from './RelationModal.vue'
+import RelationModal from './RelationModal.vue'
+import AddRelationBtn from './stubs/AddRelationBtn.vue'
 
     export default{
         components:{
-            RelationModal
+            RelationModal,
+            AddRelationBtn
         },
 
         data(){
             return {
 
-                current_relation:{}
+                new_relation_type: ''
             }
         },
         methods: {
 
             addRelation() {
+                if (this.new_relation_type == '') {
+                    alert('Choose relation type');
+                    return false;
+                }
+                this.$broadcast('relation::new', this.new_relation_type);
                 this.$broadcast('show::modal', 'relation_modal');
+                this.new_relation_type = '';
             },
 
             isRelation (row) {

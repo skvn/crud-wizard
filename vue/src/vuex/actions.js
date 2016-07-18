@@ -7,6 +7,8 @@ var Actions = {};
 
 export default Actions;
 
+Actions.apiUrl = apiUrl;
+
 Actions.fetchConfig = function ({ dispatch}, table) {
     var page_url = apiUrl +'getWizardConfig';
     Vue.http.get(page_url, {params:{args:[table]}})
@@ -21,8 +23,8 @@ Actions.fetchModel = function ({ dispatch }, table) {
         .then((response) => dispatch('SET_MODEL', response.json()))
         .catch((error) => Promise.reject(error));
 
-
 }
+
 
 
 

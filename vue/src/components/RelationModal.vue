@@ -28,9 +28,9 @@
                             <label>Model</label>
                             <select class="form-control default_select" v-model="relation.model" required>
                                 <option value="">Choose relation model</option>
-                                {% for m in wizard.getAvailableModels() %}
-                                <option value="{{ m|snake_case }}">{{ m }}</option>
-                                {% endfor %}
+                                <option v-for="m in config.all_models" v-bind:value="m">
+                                    {{ m }}
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-6" v-if="relation.relation=='belongsTo'">
@@ -109,9 +109,9 @@
                         <div class="col-md-6">
                             <select v-model="relation.type" class="form-control default_select">
                                 <option value="">Choose field type</option>
-                                {% for k,v in wizard.getAvailableRelationFieldTypes(multiple) %}
-                                <option value="{{ k }}">{{ v }}</option>
-                                {% endfor %}
+                                <option v-for="(value, text) in edit_types" v-bind:value="value">
+                                    {{ text }}
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -154,6 +154,8 @@
 <script>
 
     import Modal from './ui/Modal.vue'
+    import { getConfig } from '../vuex/getters'
+    import Actions from '../vuex/actions'
 
     export default {
 
@@ -163,44 +165,78 @@
           Modal
         },
 
+        vuex: {
+            getters: {
+                config: getConfig
+            }
+
+        },
+
       data(){
             return{
-//                empty_relation: {
-//                    'relation':'',
-//                    'model': '',
-//                    'on_delete':'',
-//                    'field':'',
-//                    'editable':false,
-//                    'type':'',
-//                    'find': '',
-//                    'model_obj':{'columns':[],'find_methods':[]},
-//                    'pivot':0,
-//                    'pivot_table':'',
-//                    'pivot_self_key':'',
-//                    'pivot_foreign_key':'',
-//                    'pivot_columns': []
-//                },
-//                current_relation: {},
-
-                // model: {},
+                empty_relation: {
+                    'relation':'',
+                    'model': '',
+                    'on_delete':'',
+                    'field':'',
+                    'editable':false,
+                    'type':'',
+                    'find': '',
+                    'model_obj':{'columns':[],'find_methods':[]},
+                    'pivot':0,
+                    'pivot_table':'',
+                    'pivot_self_key':'',
+                    'pivot_foreign_key':'',
+                    'pivot_columns': []
+                },
                 relation: {},
+                edit_types: {},
 
             }
         },
 
-        created: function () {
-
-
-        },
-        methods: {
-            close: function () {
-                this.show = false;
-                this.$dispatch('empty_relation');
+        events: {
+            // control modal from outside via events
+            'relation::new'(type) {
+                this.initEmptyRelation()
+                this.relation.relation = type;
             },
-            save: function () {
-                this.$dispatch('save_relation');
-                this.close();
+            'hide::modal'(id) {
+                if (id === 'relation_modal') {
+                    this.initEmptyRelation()
+                }
+            }
+        },
+
+        methods: {
+            initEmptyRelation() {
+                this.relation =  Object.assign({},this.empty_relation);
+            },
+
+            toJson() {
+
+            }
+        },
+
+        watch: {
+            'relation.relation': function (value) {
+                var page_url = Actions.apiUrl +'getAvailableRelationEditTypes'
+                this.$http.get(page_url,{params:{args:[value]}}).then((resp)=>{
+                   this.$set('edit_types',resp.json())
+                });
+
+            },
+            'relation.model': function (value) {
+                if (value) {
+                    //this.fillRelationModel(value, 'current_relation.model_obj');
+                }
+            },
+            'relation.pivot_table': function (value) {
+                if (value) {
+                    //this.fillTableColumns(value, 'current_relation.pivot_columns');
+                }
             }
         }
+
     }
 </script>
