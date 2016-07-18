@@ -33,6 +33,7 @@
 </template>
 <script>
 
+    import Vue from 'vue'
     import store from '../vuex/store'
     import Actions from '../vuex/actions'
     import { getModel, getConfig } from '../vuex/getters'
@@ -88,22 +89,37 @@
         },
 
 
+        events: {
 
+            delete_field(key) {
+                this.deleteField(key);
+            }
+        },
         methods: {
 
             saveModel() {
                 var form = $('form.validate').first();
                 if (form.length) {
                     var bootstrapValidator = form.data('bootstrapValidator');
-                    if (bootstrapValidator && !bootstrapValidator.isValid()) {
-                        return false;
+                    if (bootstrapValidator ) {
+                        bootstrapValidator.validate();
+                        if (!bootstrapValidator.isValid()) {
+                            return false;
+                        }
                     }
                 }
 
+                console.log(JSON.stringify(this.model));
+            },
 
+            deleteField(key) {
 
+                if (confirm('Delete '+key+'?'))
+                {
+                    Vue.delete(this.model.fields,key);
+                }
 
-            }
+            },
         }
 
     }

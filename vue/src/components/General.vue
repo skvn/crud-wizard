@@ -36,7 +36,7 @@
                 <div class="form-group">
                     <label for="ent_name">Entity name *</label>
                     <input type="text" class="form-control" id="ent_name" name="ent_name" required
-                           v-model="$parent.model.ent_name"  />
+                        :value="$parent.model.ent_name"   v-model="$parent.model.ent_name"  />
                 </div>
                 <div class="form-group">
                     <label for="title_field">Title field</label>

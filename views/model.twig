@@ -18,11 +18,11 @@
 
 
 {% block modals %}
-{#<script src="{{ 'js/vue/wizard.js'|asset(0,'crud-wizard') }}"></script>#}
+
 <script>
     var table = "{{ table }}";
 </script>
-<script src="/vue/dist/build.js"></script>
+<script src="{{ 'js/wizard_build.js'|asset(0,'crud-wizard') }}"></script>
 
 {% endblock %}
 

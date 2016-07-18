@@ -1,4 +1,17 @@
 <template>
+    <label>
+
+        <select class="form-control default_select" id="rtype" v-model.sync="current_relation.relation"
+                style="display:inline; width:250px;">
+            <option value="">Choose relation type</option>
+            {%  for rel in wizard.getRelations() %}
+            <option value="{{ rel }}">{{ rel }}</option>
+            {% endfor %}
+        </select>
+        <a href="#" class="btn btn-success" @click="addRelation"><i class="fa fa-plus"></i>
+            Add relation</a>
+    </label>
+
     <table class="table table-striped">
         <tr>
 
@@ -20,26 +33,51 @@
             <td><a class="text-info" style="font-size: 20px;" href="#" @click="editRelation(key)"><i
                     class="fa fa-edit"> </i></a>
                 &nbsp;&nbsp;&nbsp;
-                <a class="text-danger" href="#" @click="deleteField(key)"
+                <a class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
                    style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
             </td>
         </tr>
 
     </table>
+    <label>
+
+        <select class="form-control default_select" id="rtype" v-model.sync="current_relation.relation"
+                style="display:inline; width:250px;">
+            <option value="">Choose relation type</option>
+            {%  for rel in wizard.getRelations() %}
+            <option value="{{ rel }}">{{ rel }}</option>
+            {% endfor %}
+        </select>
+        <a href="#" class="btn btn-success" @click.prevent="addRelation"><i class="fa fa-plus"></i>
+            Add relation</a>
+    </label>
+
+    <relation-modal></relation-modal>
 
 </template>
 
 <script>
 //    import HeaderComponent from './components/header.vue'
-//    import OtherComponent from './components/other.vue'
-    export default{
-//        components:{
-//            'other-component':OtherComponent,
-//            HeaderComponent,
-//        }
+    import RelationModal from './RelationModal.vue'
 
+    export default{
+        components:{
+            RelationModal
+        },
+
+        data(){
+            return {
+
+                current_relation:{}
+            }
+        },
         methods: {
-            isRelation: function (row) {
+
+            addRelation() {
+                this.$broadcast('show::modal', 'relation_modal');
+            },
+
+            isRelation (row) {
                 if (row.$value.relation)
                 {
                     return row;

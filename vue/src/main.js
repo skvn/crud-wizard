@@ -37,9 +37,25 @@ router.redirect({
 
 router.beforeEach(function (transition) {
 
+    var form = $('form.validate').first();
+    if (form.length) {
+        var bootstrapValidator = form.data('bootstrapValidator');
+        if (bootstrapValidator ) {
+            bootstrapValidator.validate();
+            if (!bootstrapValidator.isValid()) {
+                return false;
+            }
+        }
+
+    }
+    transition.next()
+});
+
+router.afterEach(function (transition) {
+
     $('.nav-pills').find('li').removeClass('active');
     $('.nav-pills').find('li[data-rel="'+transition.to.path+'"]').addClass('active');
-    transition.next()
+
 });
 
 router.start({

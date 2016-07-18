@@ -4,9 +4,9 @@ var webpack = require('webpack')
 module.exports = {
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'build.js'
+    path: path.resolve(__dirname, '../public/js'),
+    publicPath: '/vendor/crud-wizard/js',
+    filename: 'wizard_build.js'
   },
   resolveLoader: {
     root: path.join(__dirname, 'node_modules'),
