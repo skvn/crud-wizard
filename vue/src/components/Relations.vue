@@ -20,7 +20,7 @@
             <td>{{ rel.type }}</td>
             <td>{{ rel.title }}</td>
             <td>{{ rel.model }}</td>
-            <td><a class="text-info" style="font-size: 20px;" href="#" @click="editRelation(key)"><i
+            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="editRelation(key)"><i
                     class="fa fa-edit"> </i></a>
                 &nbsp;&nbsp;&nbsp;
                 <a class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
@@ -56,12 +56,17 @@ import AddRelationBtn from './stubs/AddRelationBtn.vue'
 
             addRelation() {
                 if (this.new_relation_type == '') {
-                    alert('Choose relation type');
+                    swal('Choose relation type','','warning');
                     return false;
                 }
                 this.$broadcast('relation::new', this.new_relation_type);
                 this.$broadcast('show::modal', 'relation_modal');
                 this.new_relation_type = '';
+            },
+
+            editRelation(key) {
+                this.$broadcast('relation::edit', key);
+                this.$broadcast('show::modal', 'relation_modal');
             },
 
             isRelation (row) {

@@ -6,6 +6,7 @@ import Vuex from 'vuex'
 import App from './components/App.vue'
 import General from './components/General.vue'
 import Relations from './components/Relations.vue'
+import Fields from './components/Fields.vue'
 
 import store from './vuex/store'
 
@@ -27,6 +28,10 @@ router.map({
 
     '/relations': {
         component: Relations
+    },
+
+    '/fields': {
+        component: Fields
     },
 
 })
@@ -54,7 +59,7 @@ router.beforeEach(function (transition) {
 router.afterEach(function (transition) {
 
     $('.nav-pills').find('li').removeClass('active');
-    $('.nav-pills').find('li[data-rel="'+transition.to.path+'"]').addClass('active');
+    $('.nav-pills').find('a[href="#!'+transition.to.path+'"]').parent().addClass('active');
 
 });
 

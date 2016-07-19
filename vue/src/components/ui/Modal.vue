@@ -90,6 +90,7 @@
             'show::modal'(id) {
                 if (id === this.id) {
                     this.show()
+                    $('form', this.$el).first().bootstrapValidator();
                 }
             },
             'hide::modal'(id) {

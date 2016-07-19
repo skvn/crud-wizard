@@ -67,6 +67,15 @@ class Wizard
      */
     private $skip_tables = ['users','password_resets','migrations'];
 
+    public static $relationList = [
+        'hasOne',
+        'hasMany',
+        'belongsTo',
+        'belongsToMany',
+        'hasFile',
+        'hasManyFiles',
+    ];
+
 
     /**
      * Wizard constructor.
@@ -404,7 +413,7 @@ class Wizard
             {
                 if (!$control->wizardIsForRelationOnly())
                 {
-                    $types[$control->controlType()] = $control;
+                    $types[$control->controlType()] = $control->wizardCaption();
                 }
             }
 
@@ -435,11 +444,11 @@ class Wizard
 
 
     /**
-     * Get an array of available form field types for  relations
+     * Get an array of available form field types for a  relation
      *
      * @return array
      */
-    function getAvailableRelationFieldTypes($multiple=false)
+    function getAvailableRelationFieldTypes($relation)
     {
         $types = [];
 
@@ -447,20 +456,10 @@ class Wizard
         {
             if ($control instanceof WizardableField)
             {
-                if ($control->wizardIsForRelation())
+                $rels = $control->wizardIsForRelations();
+                if (in_array($relation,$rels))
                 {
-                    if ($multiple)
-                    {
-                         if ($control->wizardIsForManyRelation()) {
-                             $types[$control->controlType()] = $control->wizardCaption();
-                         }
-                    } else {
-                        if ($control->wizardIsForManyRelation()) {
-                            continue;
-                        }
-                        $types[$control->controlType()] = $control->wizardCaption();
-                    }
-
+                    $types[$control->controlType()] = $control->wizardCaption();
                 }
             }
 
@@ -468,7 +467,6 @@ class Wizard
         }
         return $types;
 
-        return $ret;
     }
 
 
@@ -783,14 +781,7 @@ class Wizard
      */
     public function getRelations()
     {
-        return [
-            'hasOne',
-            'hasMany',
-            'belongsTo',
-            'belongsToMany',
-            'hasManyFiles',
-            'hasFile'
-        ];
+        return self::$relationList;
     }
 
     
@@ -811,7 +802,10 @@ class Wizard
             'table_columns' => $this->getTableColumns($table),
             'track_history_options' => $this->getTrackHistoryOptions(),
             'relation_options' => $this->getRelations(),
-            'all_models' => $this->getAvailableModels('snake_case')
+            'all_models' => $this->getAvailableModels('snake_case'),
+            'on_delete_actions' => $this->getOndeleteActions(),
+            'pivot_tables' => $this->getPossiblePivotTables(),
+            'field_options' => $this->getAvailableFieldTypes()
         ];
     }
 
@@ -825,9 +819,5 @@ class Wizard
         return true;
     }
 
-    public function getAvailableRelationEditTypes($relation)
-    {
-        return $this->getAvailableRelationFieldTypes($this->isRelationMultiple($relation));
 
-    }
 }

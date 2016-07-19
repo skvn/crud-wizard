@@ -9,8 +9,9 @@
                 <div class="card">
                     <div class="pull-left" style="width: 90%">
                         <ul class="nav nav-pills">
-                            <li role="presentation" data-rel="/general"><a  v-link="'general'">General settings</a></li>
-                            <li role="presentation" data-rel="/relations"><a  v-link="'relations'">Relations</a></li>
+                            <li role="presentation"><a  v-link="'general'">General settings</a></li>
+                            <li role="presentation"><a  v-link="'relations'">Relations</a></li>
+                            <li role="presentation"><a  v-link="'fields'">Fields</a></li>
                         </ul>
                     </div>
                     <div class="pull-right">
@@ -114,10 +115,28 @@
 
             deleteField(key) {
 
-                if (confirm('Delete '+key+'?'))
-                {
-                    Vue.delete(this.model.fields,key);
-                }
+
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this field!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!222",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                })
+                .then(() => {
+
+                    Vue.delete(this.model.fields, key);
+                    swal(
+                            'Deleted!',
+                            'The field has been deleted.',
+                            'success'
+                    );
+                });
+
 
             },
         }
