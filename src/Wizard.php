@@ -3,8 +3,9 @@
 use Skvn\Crud\Form\Form;
 use Skvn\Crud\Form\Field;
 use Skvn\Crud\Models\CrudModel;
-use Skvn\Crud\Contracts\WizardableField;
+use Skvn\CrudWizard\Contracts\WizardableField;
 use Skvn\Crud\Contracts\FormControlFilterable;
+use Skvn\CrudWizard\Exceptions\WizardException;
 
 
 /**
@@ -15,6 +16,8 @@ use Skvn\Crud\Contracts\FormControlFilterable;
 class Wizard
 {
 
+
+    protected static $controls = [];
 
     /**
      * @var null bool|null
@@ -407,7 +410,7 @@ class Wizard
     function getAvailableFieldTypes()
     {
         $types = [];
-        foreach (Form:: getAvailControls() as $control)
+        foreach (self :: getAvailControls() as $control)
         {
             if ($control instanceof WizardableField)
             {
@@ -795,6 +798,58 @@ class Wizard
 
     }
 
+    public function getFieldsSectionConfig()
+    {
+        $ret = [];
+        foreach (self :: getAvailControls() as $control)
+        {
+            $ret[$control->controlType()] = $control->wizardConfigSections();
+        }
+
+        return $ret;
+    }
+
+    public function getFieldsConfigDefaults()
+    {
+        $ret = [];
+        foreach (self :: getAvailControls() as $control)
+        {
+            $ret[$control->controlType()] = $control->wizardConfigDefaults();
+        }
+
+        return $ret;
+    }
+
+
+    static function registerControl($class)
+    {
+        $control = $class :: create();
+
+        if (! $control instanceof WizardableField)
+        {
+            throw new WizardException("Invalid control class " . $class);
+        }
+        if (isset(self :: $controls[$control->controlType()]))
+        {
+            throw new WizardException('Control already registered: ' . $class);
+        }
+        self :: $controls[$control->controlType()] = $control;
+    }
+
+    static function getAvailControls()
+    {
+        return self :: $controls;
+    }
+
+    static function getAvailControl($type)
+    {
+        if (!isset(self :: $controls[$type]))
+        {
+            throw new WizardException("Invalid control `".$type."`");
+        }
+        return self :: $controls[$type];
+    }
+
     public function getWizardConfig($table)
     {
         return [
@@ -805,7 +860,12 @@ class Wizard
             'all_models' => $this->getAvailableModels('snake_case'),
             'on_delete_actions' => $this->getOndeleteActions(),
             'pivot_tables' => $this->getPossiblePivotTables(),
-            'field_options' => $this->getAvailableFieldTypes()
+            'field_options' => $this->getAvailableFieldTypes(),
+            'field_section_config' => $this->getFieldsSectionConfig(),
+            'field_defaults' => $this->getFieldsConfigDefaults(),
+            'editor_types' => $this->getAvailableEditors(),
+
+
         ];
     }
 

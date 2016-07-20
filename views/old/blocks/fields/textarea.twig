@@ -6,6 +6,7 @@
     <div class="col col-xs-4">
         {% include 'crud::wizard/blocks/fields/field_hint' %}
     </div>
+
     <div class="col col-xs-2">
             <label>
                 Height <input type="number" value="{{ fld.height?fld.height:500 }}" step="1" name="fields[{{ ALIAS }}][height]" style="width: 50px;"                        >

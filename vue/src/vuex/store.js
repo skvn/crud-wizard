@@ -11,7 +11,9 @@ const default_model = {
 
 const state = {
     model: default_model,
-    config: {},
+    config: {
+        'field_section_config':{}
+    },
 }
 
 const mutations = {

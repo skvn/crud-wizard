@@ -1,7 +1,8 @@
 <template>
 
     <add-field-btn></add-field-btn>
-
+    <br />
+    <br />
     <table class="table table-striped">
         <tr>
 
@@ -25,35 +26,45 @@
 
    <add-field-btn></add-field-btn>
 
-   <!--<relation-modal></relation-modal>-->
+   <field-modal></field-modal>
 
 </template>
 
 <script>
 
-//import RelationModal from './RelationModal.vue'
+import FieldModal from './FieldModal.vue'
 import AddFieldBtn from './stubs/AddFieldBtn.vue'
 
     export default{
         components:{
-            AddFieldBtn
+            AddFieldBtn,
+            FieldModal
         },
 
         data(){
             return {
-                new_field_type:''
+                new_field_type:'',
+                new_field_key:'',
+                new_field_key_new:''
             }
         },
         methods: {
 
             addField() {
-                if (this.new_field_type == '') {
-                    swal('Choose field type','','warning');
+                if (this.new_field_key == '' && this.new_field_key_new == '') {
+                    swal('Oh, no :(','Please, choose an existing table field or enter a new one','warning');
                     return false;
                 }
-//                this.$broadcast('relation::new', this.new_relation_type);
-//                this.$broadcast('show::modal', 'relation_modal');
-//                this.new_relation_type = '';
+
+                if (this.new_field_type == '') {
+                    swal('Oh no : (','Please, choose a field type','warning');
+                    return false;
+                }
+                this.$broadcast('field::new', {type:this.new_field_type, key: (this.new_field_key || this.new_field_key_new)});
+                this.$broadcast('show::modal', 'field_modal');
+                this.new_field_type = '';
+                this.new_field_key = '';
+                this.new_field_key_new = '';
             },
 
             isField (row) {
