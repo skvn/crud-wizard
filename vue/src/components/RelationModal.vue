@@ -178,6 +178,7 @@
       data(){
             return{
                 empty_relation: {
+                    'title':'',
                     'relation':'',
                     'model': '',
                     'on_delete':'',

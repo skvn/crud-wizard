@@ -15,7 +15,7 @@
             <td>{{ key }}</td>
             <td>{{ f.type }}</td>
             <td>{{ f.title }}</td>
-            <td><a class="text-info" style="font-size: 20px;" href="#" @click="editField(key)"><i
+            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="editField(key)"><i
                     class="fa fa-edit"> </i></a>
                 &nbsp;&nbsp;&nbsp;
                 <a class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
@@ -80,6 +80,12 @@ import { getConfig, getModel } from '../vuex/getters'
                 this.new_field_type = '';
                 this.new_field_key = '';
                 this.new_field_key_new = '';
+            },
+
+
+            editField(key) {
+                this.$broadcast('field::edit', key);
+                this.$broadcast('show::modal', 'field_modal');
             },
 
             isField (row) {

@@ -43,7 +43,7 @@
 
                         <div class="form-group"  v-if="showField('height')">
                         <label>Height</label>
-                            <input type="number" :value="!field.height?500" step="1" name="height" style="width: 50px;" v-model="field.height">
+                            <input type="number" :value="field.height" step="1" name="height" style="width: 50px;" v-model="field.height">
                         </div>
 
                         <div class="form-group"  v-if="showField('editor_type')">
@@ -91,13 +91,13 @@
 
                         <div class="form-group"    v-if="showField('data_provider')">
                             <label> Data provider method *</label>
-                                <select class="form-control default_select" name="find" required v-model="field.find"  >
+                                <select class="form-control default_select" name="find" :value="field.find" required v-model="field.find"  >
                                     <option value="">Choose  method</option>
                                     <option v-for=" f in config.find_methods"  v-bind:value="f.name">
                                         {{ f.name }}  ({{ f.description }})
                                     </option>
                                 </select>
-                                <span id="helpBlock" class="help-block">The name of the model method that provides edit options. See documentation for the details.</span>
+
 
                         </div>
 
@@ -215,6 +215,10 @@
 
             save() {
                 Actions.validateForm($('form#field_form'), () => {
+                    delete this.field.is_for_virtual;
+                    Vue.set(this.model.fields,this.field.key,Object.assign({},this.field));
+                    this.initEmptyField();
+                    this.$broadcast('hide::modal', 'field_modal');
                 });
 
             },

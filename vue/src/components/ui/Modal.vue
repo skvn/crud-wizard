@@ -89,8 +89,10 @@
             // control modal from outside via events
             'show::modal'(id) {
                 if (id === this.id) {
-                    this.show()
-                    $('form', this.$el).first().bootstrapValidator();
+                    this.show();
+                    var $form = $('form', this.$el).first();
+                    window.setTimeout(function () {$form.bootstrapValidator();}, 500);
+
                 }
             },
             'hide::modal'(id) {
