@@ -12,6 +12,18 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
 
 
     /**
+     * Get Wizard config defaults
+     *
+     * @return array
+     */
+    public function wizardConfigDefaults(): array {
+
+        return ['find'=>''];
+    }
+
+
+
+    /**
      * Returns true if the  control can be used only for relation editing only
      *
      * @return bool
@@ -42,6 +54,15 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
         return 'integer';
     }
 
+    /**
+     * Return wizard config sections
+     *
+     * @return array
+     */
+    public function wizardConfigSections():array {
+
+        return ['required','data_provider'];
+    }
 
     function wizardCaption()
     {

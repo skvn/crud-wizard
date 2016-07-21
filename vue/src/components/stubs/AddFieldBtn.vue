@@ -11,7 +11,7 @@
                 {{ f }}
             </option>
         </select>
-        or add a new one <input type="text" style="display:inline; width:150px;" id="$parent.new_field_key_new" />
+        or add a new one <input type="text" style="display:inline; width:150px;" v-model="$parent.new_field_key_new" />
 
         <select class="form-control default_select" id="rtype" v-model.sync="$parent.new_field_type"
                 style="display:inline; width:250px;">
@@ -59,7 +59,9 @@ import { getModel } from '../../vuex/getters'
                 return false;
             },
 
-        }
+        },
+
+
 
     }
 </script>

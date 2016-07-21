@@ -455,11 +455,12 @@ class Wizard
     {
         $types = [];
 
-        foreach (Form :: getAvailControls() as $control)
+        foreach (self :: getAvailControls() as $control)
         {
             if ($control instanceof WizardableField)
             {
                 $rels = $control->wizardIsForRelations();
+
                 if (in_array($relation,$rels))
                 {
                     $types[$control->controlType()] = $control->wizardCaption();
@@ -815,6 +816,7 @@ class Wizard
         foreach (self :: getAvailControls() as $control)
         {
             $ret[$control->controlType()] = $control->wizardConfigDefaults();
+            $ret[$control->controlType()]['is_for_virtual'] = $control->wizardIsForVirtualOnly();
         }
 
         return $ret;
@@ -852,6 +854,7 @@ class Wizard
 
     public function getWizardConfig($table)
     {
+        $modelConfig = $this->getModelConfig($table);
         return [
             'acls' => $this->app['config']['acl.acls'],
             'table_columns' => $this->getTableColumns($table),
@@ -864,6 +867,9 @@ class Wizard
             'field_section_config' => $this->getFieldsSectionConfig(),
             'field_defaults' => $this->getFieldsConfigDefaults(),
             'editor_types' => $this->getAvailableEditors(),
+            'date_formats' => $this->getAvailableDateFormats(),
+            'date_time_formats' => $this->getAvailableDateTimeFormats(),
+            'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name'])
 
 
         ];

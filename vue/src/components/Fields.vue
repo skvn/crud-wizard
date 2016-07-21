@@ -34,11 +34,20 @@
 
 import FieldModal from './FieldModal.vue'
 import AddFieldBtn from './stubs/AddFieldBtn.vue'
+import { getConfig, getModel } from '../vuex/getters'
 
     export default{
         components:{
             AddFieldBtn,
             FieldModal
+        },
+
+        vuex: {
+            getters: {
+                config: getConfig,
+                model: getModel
+            }
+
         },
 
         data(){
@@ -60,6 +69,12 @@ import AddFieldBtn from './stubs/AddFieldBtn.vue'
                     swal('Oh no : (','Please, choose a field type','warning');
                     return false;
                 }
+
+                if (this.new_field_key_new == '' && this.config.field_defaults[this.new_field_type]['is_for_virtual']) {
+                    swal('Oh no : (','This field type can be used only with a virtual property. Please enter a new property.','warning');
+                    return false;
+                }
+
                 this.$broadcast('field::new', {type:this.new_field_type, key: (this.new_field_key || this.new_field_key_new)});
                 this.$broadcast('show::modal', 'field_modal');
                 this.new_field_type = '';
@@ -73,6 +88,23 @@ import AddFieldBtn from './stubs/AddFieldBtn.vue'
                     return row;
                 }
             },
+        },
+
+        watch : {
+            'new_field_key': function (val, oldVal) {
+                if (val != '')
+                {
+                    this.new_field_key_new = "";
+                }
+            },
+
+            'new_field_key_new': function (val, oldVal) {
+                if (val != '')
+                {
+                    this.new_field_key = "";
+                }
+            },
+
         }
 
     }

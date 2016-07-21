@@ -10,6 +10,26 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
 {
     use WizardCommonFieldTrait;
 
+    /**
+     * Get Wizard config defaults
+     *
+     * @return array
+     */
+    public function wizardConfigDefaults(): array {
+
+        return ['format'=>'d.m.Y H:i'];
+    }
+
+    /**
+     * Return wizard config sections
+     *
+     * @return array
+     */
+    public function wizardConfigSections():array {
+
+        return ['required','date_time_format'];
+    }
+
     public function wizardDbType()
     {
         return 'dateTime';

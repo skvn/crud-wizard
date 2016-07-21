@@ -28,7 +28,16 @@ interface WizardableField
      * @return null|string
      */
     public function wizardDbType();
-    
+
+
+    /**
+     * Returns true if the  control can be used only for virtual property
+     *
+     * @return bool
+     */
+    public function wizardIsForVirtualOnly():bool;
+
+
     /**
      * Returns true if the  control can be used only for relation editing only
      * 

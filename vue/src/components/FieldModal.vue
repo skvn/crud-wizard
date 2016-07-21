@@ -11,14 +11,34 @@
                 <span class="label label-primary pull-right">{{ field.type }}</span>
                 <span class="label label-warning pull-right">{{ field.key }}</span>
                 <br clear="all" />
-                <div class="row" style="padding:10px;">
-
+                <div class="row">
+                    <div class="col-md-12">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Title *</label>
                                 <input type="text"  class="form-control" name="title" :value="field.title"
                                        required placeholder="Title of the field" v-model="field.title" >
 
+                        </div>
+
+                        <div class="form-group"  v-if="showField('date_format')">
+                         <label>Format</label>
+                        <select class="form-control default_select" name="format" required v-model="field.format" >
+                            <option value="">Choose format</option>
+                            <option v-for="(key,v) in config.date_formats"  v-bind:value="v.php">
+                                {{ v.php }}
+                            </option>
+                        </select>
+                        </div>
+
+                        <div class="form-group"  v-if="showField('date_time_format')">
+                            <label>Format</label>
+                            <select class="form-control default_select" name="format" required v-model="field.format" >
+                                <option value="">Choose format</option>
+                                <option v-for="(key,v) in config.date_time_formats"  v-bind:value="v.php">
+                                    {{ v.php }}
+                                </option>
+                            </select>
                         </div>
 
                         <div class="form-group"  v-if="showField('height')">
@@ -35,25 +55,79 @@
                                 </select>
                         </div>
 
+                        <div class="form-group"    v-if="showField('range')">
+                            <label> Start field</label>
+                            <select class="form-control default_select" :value="field.fields[0]"  v-model="field.fields[0]" name="start_field" required >
+                                <option value="">Choose field</option>
+                                <option v-for="f in config.table_columns | filterBy notUsedField"  v-bind:value="f">
+                                    {{ f }}
+                                </option>
+                            </select>
+                            <label> End field</label>
+                            <select class="form-control default_select" :value="field.fields[1]"  v-model="field.fields[1]" name="start_field" required >
+                                <option value="">Choose field</option>
+                                <option v-for="f in config.table_columns | filterBy notUsedField"  v-bind:value="f">
+                                    {{ f }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group"    v-if="showField('number')">
+                            <div class="row">
+                                <div class="col col-xs-4">
+                                    <label>Min</label>
+                                        <input type="text" class="form-control" name="min" v-model="field.min"  >
+                                </div>
+                                <div class="col col-xs-4">
+                                    <label>Max</label>
+                                        <input type="text" class="form-control" name="max"  v-model="field.max"  >
+                                </div>
+                                <div class="col col-xs-4">
+                                    <label>Step</label>
+                                    <input type="text" class="form-control" name="step" v-model="field.step" >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group"    v-if="showField('data_provider')">
+                            <label> Data provider method *</label>
+                                <select class="form-control default_select" name="find" required v-model="field.find"  >
+                                    <option value="">Choose  method</option>
+                                    <option v-for=" f in config.find_methods"  v-bind:value="f.name">
+                                        {{ f.name }}  ({{ f.description }})
+                                    </option>
+                                </select>
+                                <span id="helpBlock" class="help-block">The name of the model method that provides edit options. See documentation for the details.</span>
+
+                        </div>
+
+
+
                     </div>
                     <div class="col-md-6">
+                        <div class="form-group">
                         <label> Hint</label>
                         <input type="text" class="form-control"
                                name="hint" :value="field.hint" placeholder="a little hint for the user"
                                v-model="field.hint" >
-
+                        </div>
+                        <div class="form-group">
                         <label> Extra attributes</label>
                         <input type="text" class="form-control" name="extra" :value="field.extra" placeholder="disabled, readonly. etc"
                                v-model="field.extra"
                         >
-
+                        </div>
+                        <div class="form-group">
                         <div class="checkbox" v-if="showField('required')">
                             <label>
                                 <input  type="checkbox" name="required" v-model="field.required" /> Required
                             </label>
                         </div>
+                        </div>
+
 
                     </div>
+                </div>
                 </div>
             </div>
             </form>

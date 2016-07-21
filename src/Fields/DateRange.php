@@ -10,11 +10,41 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
 {
     use WizardCommonFieldTrait;
 
+    /**
+     * Get Wizard config defaults
+     *
+     * @return array
+     */
+    public function wizardConfigDefaults(): array {
+
+        return ['format'=>'d.m.Y H:i','fields'=>['','']];
+    }
+
+    /**
+     * Return wizard config sections
+     *
+     * @return array
+     */
+    public function wizardConfigSections():array {
+
+        return ['required','date_time_format', 'range'];
+    }
+
     public function wizardDbType()
     {
         return '';
     }
 
+
+    /**
+     * Returns true if the  control can be used only for virtual property
+     *
+     * @return bool
+     */
+    public function wizardIsForVirtualOnly():bool
+    {
+        return true;
+    }
 
     function wizardCaption()
     {

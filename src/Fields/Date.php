@@ -10,7 +10,26 @@ class Date extends \Skvn\Crud\Form\Date implements WizardableField
 {
     use WizardCommonFieldTrait;
 
+    /**
+     * Get Wizard config defaults
+     *
+     * @return array
+     */
+    public function wizardConfigDefaults(): array {
 
+        return ['format'=>'d.m.Y'];
+    }
+
+
+    /**
+     * Return wizard config sections
+     *
+     * @return array
+     */
+    public function wizardConfigSections():array {
+
+        return ['required','date_format'];
+    }
 
     function wizardCaption()
     {

@@ -39,6 +39,16 @@ trait WizardCommonFieldTrait
 
 
     /**
+     * Returns true if the  control can be used only for virtual property
+     *
+     * @return bool
+     */
+    public function wizardIsForVirtualOnly():bool
+    {
+        return false;
+    }
+
+    /**
      * Returns true if the  control can be used only for relation editing only
      *
      * @return bool
