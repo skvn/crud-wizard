@@ -7,6 +7,7 @@ const default_model = {
     acl:'',
     title_field:'',
     track_history: '',
+    forms: []
 };
 
 const state = {

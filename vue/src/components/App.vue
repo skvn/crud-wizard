@@ -12,6 +12,7 @@
                             <li role="presentation"><a  v-link="'general'">General settings</a></li>
                             <li role="presentation"><a  v-link="'relations'">Relations</a></li>
                             <li role="presentation"><a  v-link="'fields'">Fields</a></li>
+                            <li role="presentation"><a  v-link="'forms'">Forms</a></li>
                         </ul>
                     </div>
                     <div class="pull-right">
