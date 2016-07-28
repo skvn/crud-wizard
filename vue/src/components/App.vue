@@ -95,6 +95,41 @@
 
             delete_field(key) {
                 this.deleteField(key);
+            },
+
+            'dom::remove_parent': function (event) {
+                var trgt = $(event.target);
+                var parent;
+                if (trgt.data('parent')) {
+                    parent = $(trgt.data('parent'))
+                } else {
+                    parent = trgt.parent();
+                }
+
+                if (trgt.data('confirm')){
+
+                    swal(
+                            {
+                                title: trgt.data('confirm'),
+                                text: "You will not be able to recover this element!",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes, delete it!",
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            })
+                            .then(function () {
+
+                                parent.remove();
+                            }, function () {
+
+                            });
+
+
+                } else {
+                    parent.remove();
+                }
             }
         },
         methods: {
@@ -136,7 +171,7 @@
                             'The field has been deleted.',
                             'success'
                     );
-                });
+                }, () => {});
 
 
             },

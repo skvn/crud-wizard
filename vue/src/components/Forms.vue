@@ -15,7 +15,7 @@
             <td>{{ key }}</td>
             <td>{{ getFormType(f) }}</td>
             <td>{{ getFormFields(f).join(', ') }}</td>
-            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent=""><i
+            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="$broadcast('form::edit', key)"><i
                     class="fa fa-edit"> </i></a>
                 &nbsp;&nbsp;&nbsp;
                 <a class="text-danger" href="#" @click.prevent=""
@@ -56,12 +56,16 @@ import { getConfig, getModel } from '../vuex/getters'
         methods: {
 
             getFormType(form) {
-                if (typeof form[0] != 'undefined')
+                if (form.isArray)
                 {
                     return 'simple';
+                } else if (Object.keys(form).length)
+                {
+                    return 'tabbed'
                 }
 
-                return 'tabbed'
+
+
             },
 
             getFormFields(form) {
