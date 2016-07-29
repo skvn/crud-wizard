@@ -18,7 +18,7 @@
             <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="$broadcast('form::edit', key)"><i
                     class="fa fa-edit"> </i></a>
                 &nbsp;&nbsp;&nbsp;
-                <a class="text-danger" href="#" @click.prevent=""
+                <a class="text-danger" href="#" @click.prevent="deleteForm(key)"
                    style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
             </td>
         </tr>
@@ -27,18 +27,18 @@
     <a href="#" class="btn btn-success" @click.prevent="$broadcast('form::new')"><i class="fa fa-plus"></i>
         Add form</a>
 
-   <form-modal></form-modal>
+   <form-edit></form-edit>
 
 </template>
 
 <script>
-
-import FormModal from './FormModal.vue'
+import Vue from 'vue';
+import FormEdit from './FormEdit.vue'
 import { getConfig, getModel } from '../vuex/getters'
 
     export default{
         components:{
-            FormModal
+            FormEdit
         },
 
         vuex: {
@@ -56,7 +56,7 @@ import { getConfig, getModel } from '../vuex/getters'
         methods: {
 
             getFormType(form) {
-                if (form.isArray)
+                if (Array.isArray(form))
                 {
                     return 'simple';
                 } else if (Object.keys(form).length)
@@ -83,6 +83,33 @@ import { getConfig, getModel } from '../vuex/getters'
                   return ret;
               }
               return form;
+            },
+
+            deleteForm(key) {
+
+
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this form!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        })
+                        .then(() => {
+
+                            Vue.delete(this.model.forms, key);
+                            swal(
+                                    'Deleted!',
+                                    'The form has been deleted.',
+                                    'success'
+                            );
+                        }, () => {});
+
+
             },
 
         },

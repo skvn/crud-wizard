@@ -31,7 +31,7 @@
 
 <script>
 
-import { getModel } from '../../vuex/getters'
+import { getModel } from '../vuex/getters'
 
     export default{
 

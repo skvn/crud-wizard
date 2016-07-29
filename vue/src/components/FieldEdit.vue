@@ -155,7 +155,7 @@
 
     export default {
 
-      name: 'RelationModal',
+      name: 'FieldEdit',
 
       components: {
           Modal

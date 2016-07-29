@@ -8,6 +8,7 @@ import General from './components/General.vue'
 import Relations from './components/Relations.vue'
 import Fields from './components/Fields.vue'
 import Forms from './components/Forms.vue'
+import Scopes  from './components/Scopes.vue'
 
 import store from './vuex/store'
 
@@ -16,8 +17,6 @@ Vue.use(Resource)
 Vue.use(Router)
 Vue.use(Vuex)
 
-
-// Vue.config.delimiters = ['<%', '%>']
 
 export var router = new Router()
 
@@ -37,6 +36,10 @@ router.map({
 
     '/forms': {
         component: Forms
+    },
+
+    '/scopes': {
+        component: Scopes
     },
 
 })
@@ -71,6 +74,6 @@ router.afterEach(function (transition) {
 router.start({
     store,
     components: { App }
-}, '#app')
+}, '#app');
 
-//router.start(App, '#app')
+

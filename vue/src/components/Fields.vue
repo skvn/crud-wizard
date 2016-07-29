@@ -26,20 +26,21 @@
 
    <add-field-btn></add-field-btn>
 
-   <field-modal></field-modal>
+   <field-edit></field-edit>
 
 </template>
 
 <script>
 
-import FieldModal from './FieldModal.vue'
-import AddFieldBtn from './stubs/AddFieldBtn.vue'
+import FieldEdit from './FieldEdit.vue'
+import AddFieldBtn from './AddFieldBtn.vue'
+
 import { getConfig, getModel } from '../vuex/getters'
 
     export default{
         components:{
             AddFieldBtn,
-            FieldModal
+            FieldEdit
         },
 
         vuex: {

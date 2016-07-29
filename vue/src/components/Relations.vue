@@ -31,18 +31,18 @@
     </table>
    <add-relation-btn></add-relation-btn>
 
-   <relation-modal></relation-modal>
+   <relation-edit></relation-edit>
 
 </template>
 
 <script>
 //    import HeaderComponent from './components/header.vue'
-import RelationModal from './RelationModal.vue'
-import AddRelationBtn from './stubs/AddRelationBtn.vue'
+import RelationEdit from './RelationEdit.vue'
+import AddRelationBtn from './AddRelationBtn.vue'
 
     export default{
         components:{
-            RelationModal,
+            RelationEdit,
             AddRelationBtn
         },
 

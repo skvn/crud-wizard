@@ -2,7 +2,7 @@
     <!-- modal -->
     <modal id="form_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <h3 v-if="edit">Edit form "{{ form.name }}"</h3>
+            <h3 v-if="edit">Edit form "{{ formKey }}"</h3>
             <h3 v-if="!edit">Add new  form</h3>
         </div>
         <div slot="modal-body">
@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-md-5  col-md-offset-1 form-group">
                             <label>Form Alias *</label>
-                            <input type="text" name="key" class="form-control" :value="form_key" v-model="form_key" placeholder="Form alias *"
+                            <input type="text" name="key" class="form-control" :value="formKey" v-model="formKey" placeholder="Form alias *"
                                    required>
                         </div>
 
@@ -118,7 +118,7 @@
 
     export default {
 
-      name: 'FormModal',
+      name: 'FormEdit',
 
       components: {
           Modal
@@ -137,7 +137,7 @@
                 availableFields:[],
                 usedFields: [],
                 form: {fields:[], tabs:{}},
-                form_key: "",
+                formKey: "",
                 edit:false,
                 newTabTitle: "",
                 fieldsContainer:null,
@@ -159,9 +159,10 @@
 
             'form::edit'(key) {
                 this.edit = true;
-                this.initEditForm(this.model.forms[key]);
+                this.formKey = key;
                 this.$broadcast('show::modal','form_modal');
                 this.initDnd();
+                this.initEditForm(this.model.forms[key]);
             },
 
 
@@ -211,13 +212,16 @@
 
             initEditForm(form) {
 
+
                 console.log(this.$parent.getFormType(form));
+                console.log(form);
+
                 if (this.$parent.getFormType(form) == 'simple') {
-                    this.form.fields = Object.assign({}, form);
+                    this.$set('form', {tabs:{}, fields:form});
 
                 } else if (this.$parent.getFormType(form) == 'tabbed') {
-                    this.form.tabs = Object.assign({}, form);
-                    console.log(this.form.tabs);
+                    this.$set('form', {tabs:form, fields:[]});
+
                 }
 
                 this.usedFields = this.$parent.getFormFields(form);
@@ -228,9 +232,9 @@
                 this.form = {fields: [], tabs: {}}
 
                 if (typeof  this.model.forms == 'undefined' || !Object.keys(this.model.forms).length) {
-                    this.form_key = "default";
+                    this.formKey = "default";
                 } else {
-                    this.form_key = "form_" + (Object.keys(this.model.forms).length + 1);
+                    this.formKey = "form_" + (Object.keys(this.model.forms).length + 1);
                 }
 
                 this.edit = false;
@@ -241,7 +245,7 @@
 
             hide() {
 
-                this.initEmptyForm()
+                //this.initEmptyForm()
                 this.$broadcast('hide::modal', 'form_modal')
             },
 
@@ -249,10 +253,16 @@
 
                 Actions.validateForm($('form#form_form'), () => {
 
+                    this.recollectUsedFields();
+                    if (Object.keys(this.form.tabs).length >0)
+                    {
+                        Vue.set(this.model.forms,this.formKey,this.form.tabs);
+                    } else {
+                        Vue.set(this.model.forms,this.formKey,this.form.fields);
+                    }
 
-//
-//                    Vue.set(this.model.forms,this.form.key ,newForm);
-//                    this.hide();
+
+                    this.hide();
 
                 });
 

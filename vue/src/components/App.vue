@@ -13,6 +13,7 @@
                             <li role="presentation"><a  v-link="'relations'">Relations</a></li>
                             <li role="presentation"><a  v-link="'fields'">Fields</a></li>
                             <li role="presentation"><a  v-link="'forms'">Forms</a></li>
+                            <li role="presentation"><a  v-link="'scopes'">Scopes</a></li>
                         </ul>
                     </div>
                     <div class="pull-right">
@@ -46,24 +47,6 @@
     export default{
         data(){
             return{
-//                empty_relation: {
-//                    'relation':'',
-//                    'model': '',
-//                    'on_delete':'',
-//                    'field':'',
-//                    'editable':false,
-//                    'type':'',
-//                    'find': '',
-//                    'model_obj':{'columns':[],'find_methods':[]},
-//                    'pivot':0,
-//                    'pivot_table':'',
-//                    'pivot_self_key':'',
-//                    'pivot_foreign_key':'',
-//                    'pivot_columns': []
-//                },
-//                current_relation: {},
-
-               // model: {},
                table,
                model_loaded:true,
 
