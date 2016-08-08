@@ -35,6 +35,7 @@
 import FieldEdit from './FieldEdit.vue'
 import AddFieldBtn from './AddFieldBtn.vue'
 
+
 import { getConfig, getModel } from '../vuex/getters'
 
     export default{

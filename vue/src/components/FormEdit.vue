@@ -2,8 +2,8 @@
     <!-- modal -->
     <modal id="form_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <h3 v-if="edit">Edit form "{{ formKey }}"</h3>
-            <h3 v-if="!edit">Add new  form</h3>
+            <template v-if="edit">Edit form "{{ formKey }}"</template>
+            <template v-if="!edit">Add new  form</template>
         </div>
         <div slot="modal-body">
             <form id="form_form">
@@ -31,58 +31,64 @@
                         <div class="col-md-5">
                             <h5>Form fields</h5>
                             <div style="max-height:450px;overflow:auto">
-                            <div style="min-height:30px;background-color:lightgrey; margin-bottom: 20px;"  data-rel="fields_used"    class="list-group">
+                            <div style="min-height:30px;background-color:lightgrey; margin-bottom: 20px;"
+                                   class="list-group" v-sortable="sortableDestOptions">
 
-                                <template v-if="form.fields.length">
-                                    <span  v-for="f  in  form.fields" style="cursor: move"
-                                               data-rel="{{ f }}" class="list-group-item list-group-item-info">
-                                        <b>{{ f }}</b> {{ model.fields[f].title }} ({{ model.fields[f].type }})
-                                    </span>
-                                </template>
-                                <template v-else >
-                                    <template v-for="(key, tab) in form.tabs">
-                                        <span  class="list-group-item list-group-item-danger"
-                                              data-view="{{ tab.view }}"
-                                              data-key="{{ key }}"
-                                              data-form_tab="1" style="cursor: move">
+                                <template v-for="(key, f) in fields">
+
+                                    <template v-if="f.tab">
+                                        <span  class="list-group-item  list-group-item-danger" style="cursor: move">
+                                            <button class="btn btn-danger pull-right" @click.prevent="deleteField(key)"><i class="fa fa-trash-o"></i></button>
                                             <span>
-                                                <span class="fa fa-folder-o"></span> {{ tab.title }}
-                                             </span>
-                                            <small v-if="tab.view">({{ tab.view }})</small>
-                                            <div class="pull-right"><a href="#" @click.prevent="$dispatch('dom::remove_parent', $event)"  data-parent="span.list-group-item-danger" data-confirm="Really delete this tab?" class="label label-danger"><i class="fa fa-trash-o"></i> Remove</a>
-                                            </div>
-                                        </span>
-                                        <template v-if="tab.fields.length">
-                                            <span  v-for="f  in  tab.fields" style="cursor: move"
-                                                   data-rel="{{ f }}" class="list-group-item list-group-item-info">
-                                                <b>{{ f }}</b> {{ model.fields[f].title }} ({{ model.fields[f].type }})
+                                            <span class="fa fa-folder-o"></span> {{ f.title }}
                                             </span>
-                                        </template>
+                                            <small v-if="f.view">({{ f.view }})</small>
+                                        </span>
+                                    </template>
+                                    <template v-else >
+                                        <span  class="list-group-item" style="cursor: move">
+                                            <button class="btn btn-danger pull-right" @click.prevent="deleteField(key, f.key)"><i class="fa fa-trash-o"></i></button>
+                                            <b>{{ f.key }}</b> {{ model.fields[f.key].title }} ({{ model.fields[f.key].type }})
+
+                                        </span>
                                     </template>
                                 </template>
 
-                                    <!--<template v-if="$parent.getFormType(form) == 'tabbed'">-->
-                                        <!--<template v-for="(key, tab) in form">-->
-                                            <!---->
+
+                                <!--<template v-if="form.fields.length">-->
+                                    <!--<span  v-for="f  in  form.fields" style="cursor: move"-->
+                                               <!--data-rel="{{ f }}" class="list-group-item list-group-item-info">-->
+                                        <!--<b>{{ f }}</b> {{ model.fields[f].title }} ({{ model.fields[f].type }})-->
+                                    <!--</span>-->
+                                <!--</template>-->
+                                <!--<template v-else >-->
+                                    <!--<template v-for="(key, tab) in form.tabs">-->
+                                        <!--<span  class="list-group-item list-group-item-danger"-->
+                                              <!--data-view="{{ tab.view }}"-->
+                                              <!--data-key="{{ key }}"-->
+                                              <!--data-form_tab="1" style="cursor: move">-->
+                                            <!--<span>-->
+                                                <!--<span class="fa fa-folder-o"></span> {{ tab.title }}-->
+                                             <!--</span>-->
+                                            <!--<small v-if="tab.view">({{ tab.view }})</small>-->
+                                            <!--<div class="pull-right"><a href="#" @click.prevent="$dispatch('dom::remove_parent', $event)"  data-parent="span.list-group-item-danger" data-confirm="Really delete this tab?" class="label label-danger"><i class="fa fa-trash-o"></i> Remove</a>-->
+                                            <!--</div>-->
+                                        <!--</span>-->
+                                        <!--<template v-if="tab.fields.length">-->
+                                            <!--<span  v-for="f  in  tab.fields" style="cursor: move"-->
+                                                   <!--data-rel="{{ f }}" class="list-group-item list-group-item-info">-->
+                                                <!--<b>{{ f }}</b> {{ model.fields[f].title }} ({{ model.fields[f].type }})-->
+                                            <!--</span>-->
                                         <!--</template>-->
                                     <!--</template>-->
-
-                                <!--<template v-if="$parent.getFormType(form) == 'simple'">-->
-                                        <!--<span  v-for="f  in  form" style="cursor: move"-->
-                                               <!--data-rel="{{ f }}"-->
-                                               <!--class="list-group-item list-group-item-info"><b>{{ f }}</b>-->
-                                        <!--</span>-->
-
                                 <!--</template>-->
-
                             </div>
-
                             </div>
                         </div>
                         <div class="col-md-5 col-md-offset-1">
                             <h5>Available fields (drag'n'drop to form fields)</h5>
                             <div style="max-height:450px;overflow:auto">
-                            <div style="min-height:30px;"  data-rel="fields_stack"   class="list-group">
+                            <div style="min-height:30px;"  data-rel="fields_stack"   class="list-group" v-sortable="sortableStackOptions">
                                  <span  v-for="f  in  availableFields" style="cursor: move"
                                         data-rel="{{ f }}" class="list-group-item list-group-item-info">
                                         <b>{{ f }}</b> {{ model.fields[f].title }} ({{ model.fields[f].type }})
@@ -134,6 +140,8 @@
 
       data(){
             return{
+                tabs: [],
+                fields: [],
                 availableFields:[],
                 usedFields: [],
                 form: {fields:[], tabs:{}},
@@ -141,7 +149,29 @@
                 edit:false,
                 newTabTitle: "",
                 fieldsContainer:null,
-                fieldsStackContainer:null
+                fieldsStackContainer:null,
+                sortableStackOptions: {
+                    group: { name: "cols", pull: true, put: false},
+                    sort: false
+
+                },
+
+                sortableDestOptions: {
+                    group: { name: "cols", pull: false, put: true},
+                    sort: true,
+                    onAdd: (evt) => {
+                        var itemEl = evt.item;
+                        var newField = {key:$(itemEl).data('rel')};
+                        this.fields.splice(evt.newIndex, 0, newField);
+                        this.availableFields.$remove($(itemEl).data('rel'));
+
+                    },
+
+                    onUpdate: (evt) => {
+                        this.fields.move(evt.oldIndex,evt.newIndex);
+                    },
+
+                }
 
 
             }
@@ -153,7 +183,8 @@
             'form::new'(type) {
                 this.initEmptyForm();
                 this.$broadcast('show::modal','form_modal');
-                this.initDnd();
+                this.initFields();
+
 
             },
 
@@ -161,8 +192,8 @@
                 this.edit = true;
                 this.formKey = key;
                 this.$broadcast('show::modal','form_modal');
-                this.initDnd();
-                this.initEditForm(this.model.forms[key]);
+                this.initFields(this.model.forms[key]);
+
             },
 
 
@@ -178,55 +209,72 @@
                     return;
                 }
 
-                if (Object.keys(this.form.tabs).length == 0)
+                var tab = {tab:true, alias:'tab_'+this.tabs.length, title:this.newTabTitle};
+                if (this.tabs.length == 0)
                 {
-                    //first tab
-                    var form = {tabs:{'tab_0':{'title':this.newTabTitle, fields:this.form.fields}}, 'fields':[]};
-                    this.$set('form', form);
+                    this.fields.splice(0,0, tab);
                 } else {
-                    Vue.set(this.form.tabs,'tab_'+Object.keys(this.form.tabs).length,{'title':this.newTabTitle, fields:[]});
+                    this.fields.push(tab);
                 }
 
-//
-//                this.form.tabs['tab_'+Object.keys(this.form.tabs).length] = {title:};
+                this.tabs.push(tab);
                 this.newTabTitle = '';
 
             },
 
-            initAvailFields() {
 
-                var availableFields = [];
+            deleteField(key, rel) {
+                this.fields.splice(key,1);
+                if (rel) {
+                    this.availableFields.push(rel);
+                    this.availableFields.sort();
+                }
+            },
 
-                if (Object.keys(this.model.fields).length) {
-                    for (let i in this.model.fields) {
-//                        console.log(i);
-//                        console.log(this.usedFields.indexOf(i));
-                        if (this.usedFields.indexOf(i) < 0) {
-                            availableFields.push(i);
+            initFields(form) {
+
+                this.$set('tabs', []);
+
+                if (!this.edit)
+                {
+                    this.$set('fields', []);
+                    this.$set('availableFields', Object.keys(this.model.fields).sort());
+
+                } else {
+
+                    var fields = [];
+                    var availFields = Object.keys(this.model.fields);
+                    availFields.sort();
+
+                    if (this.$parent.getFormType(form) == 'simple') {
+                        form.forEach(function (f) {
+                            fields.push({key: f});
+                        });
+                    } else if (this.$parent.getFormType(form) == 'tabbed') {
+
+                        for (var tabid in form) {
+
+                            let tab = JSON.parse(JSON.stringify(form[tabid]));
+                            tab.alias = tabid;
+                            tab.tab = true;
+                            fields.push(tab);
+                            this.tabs.push(tab);
+                            if (tab.fields) {
+
+                                tab.fields.forEach(function (f) {
+                                    fields.push({key: f});
+                                    availFields.$remove(f);
+                                });
+                                delete tab.fields;
+                            }
                         }
                     }
-                }
 
-                this.$set('availableFields', availableFields);
+                    this.$set('fields', fields);
+                    this.$set('availableFields', availFields);
+                }
             },
 
-            initEditForm(form) {
-
-
-                console.log(this.$parent.getFormType(form));
-                console.log(form);
-
-                if (this.$parent.getFormType(form) == 'simple') {
-                    this.$set('form', {tabs:{}, fields:form});
-
-                } else if (this.$parent.getFormType(form) == 'tabbed') {
-                    this.$set('form', {tabs:form, fields:[]});
-
-                }
-
-                this.usedFields = this.$parent.getFormFields(form);
-
-            },
             initEmptyForm() {
 
                 this.form = {fields: [], tabs: {}}
@@ -245,7 +293,6 @@
 
             hide() {
 
-                //this.initEmptyForm()
                 this.$broadcast('hide::modal', 'form_modal')
             },
 
@@ -253,12 +300,49 @@
 
                 Actions.validateForm($('form#form_form'), () => {
 
-                    this.recollectUsedFields();
-                    if (Object.keys(this.form.tabs).length >0)
-                    {
-                        Vue.set(this.model.forms,this.formKey,this.form.tabs);
+
+
+                    if (this.tabs.length <=0) {
+                        var form_arr = [];
+                        this.fields.forEach(function (f, i) {
+                           form_arr.push(f.key);
+                        });
+                        Vue.set(this.model.forms,this.formKey,form_arr);
                     } else {
-                        Vue.set(this.model.forms,this.formKey,this.form.fields);
+
+
+                        var first_tab_ind  =  0;
+                        this.fields.every((f, i) => {
+                           if (f.tab) {
+                               first_tab_ind = i;
+                               return false;
+                           }
+                           return true;
+                        });
+
+                        if (first_tab_ind>0)
+                        {
+                            this.fields.move(first_tab_ind, 0);
+                        }
+                        
+                        var form_obj = {};
+                        var current_alias = '';
+                        this.fields.forEach((f, i) => {
+                            if (f.tab) {
+                                delete f.tab;
+                                current_alias = f.alias;
+                                delete f.alias;
+                                form_obj[current_alias] = f;
+                                form_obj[current_alias].fields = [];
+                            } else  {
+                                form_obj[current_alias].fields.push(f.key);
+                            }
+                        });
+
+                        Vue.set(this.model.forms,this.formKey,form_obj);
+                        console.log(form_obj);
+
+
                     }
 
 
@@ -268,158 +352,120 @@
 
             },
 
-            initDnd () {
-
-                this.initAvailFields();
-                this.fieldsContainer = $('#form_form div[data-rel=fields_used]').first();
-                this.fieldsStackContainer = $('#form_form div[data-rel=fields_stack]').first();
-
-                var fc = this.fieldsContainer;
-                var fs = this.availableFields;
-                var form = this.form;
-                var vm = this;
-                this.fieldsStackContainer.sortable({
-                    connectWith: this.fieldsContainer,
-                    tolerance: 'pointer',
-                    update: function (event, ui) {
-
-                        vm.recollectUsedFields();
-
-                        var trgt = ui.item.parents('div').first();
-                        if (trgt.data('rel') == 'fields_used')
-                        {
-                            //in
-
-                            ui.item.remove();
-
-                        } else {
-                            //out
-                            if (fs.indexOf(ui.item.data('rel'))<0) {
-                                fs.push(ui.item.data('rel'));
-                            }
-                        }
-
-
-                    }
-                }).disableSelection();
-
-                this.fieldsContainer.sortable({
-                    connectWith: this.fieldsStackContainer,
-                    tolerance: 'pointer',
-                    update: function (event, ui) {
-
-
-                    }
-
-                }).disableSelection();
-
-
-            },
-
-            recollectUsedFields() {
-
-                var  tabs_el = this.fieldsContainer.find('*[data-form_tab]');
-
-                if (tabs_el.length) {
-                    var tab_index = 0;
-                    var fields = {0: []};
-                    //console.log(tabs_el.get(0));
-                    var first_tab = $(tabs_el.get(0));
-                    var tabs = [getTabData(first_tab, 0)];
-                    first_tab.hide();
-
-                    this.fieldsContainer.children(':visible').each(function (i) {
-
-
-                        if ($(this).data('form_tab')) {
-
-
-                            tab_index++;
-                            tabs.push(getTabData($(this), tab_index));
-                            fields[tab_index] = [];
-
-
-                        } else {
-                            fields[tab_index].push($(this).data('rel'));
-                        }
-                    });
-
-                    first_tab.show();
-
-                    var set_tabs = {};
-
-                    for (let i=0; i<tabs.length; i++)
-                    {
-                        set_tabs[tabs[i].key] = Object.assign({},tabs[i]);
-                        set_tabs[tabs[i].key].fields = fields[i];
-                        delete set_tabs[tabs[i].key].key;
-                    }
-
-                    this.$set('form',{fields:[], tabs:set_tabs} );
-
-
-
+//            initDnd () {
 //
-//                    var tab = $cont.children('.list-group-item[data-form_tab]').get(0);
+//                this.initAvailFields();
+//                this.fieldsContainer = $('#form_form div[data-rel=fields_used]').first();
+//                this.fieldsStackContainer = $('#form_form div[data-rel=fields_stack]').first();
 //
+//                var fc = this.fieldsContainer;
+//                var fs = this.availableFields;
+//                var form = this.form;
+//                var vm = this;
+//                this.fieldsStackContainer.sortable({
+//                    connectWith: this.fieldsContainer,
+//                    tolerance: 'pointer',
+//                    update: function (event, ui) {
 //
-//                    var tab_info = getTabData(tab);
-//                    this.form.tabs[key] = tab_info;
-//                    this.form.tabs[key]['fields']
-//                    tab.remove();
+//                        vm.recollectUsedFields();
 //
-//                    var next_tab = $cont.children('.list-group-item[data-form_tab]').get(0);
-//
-//                    tabs = this.fieldsContainer.find('*[data-form_tab]');
-//
-//                    tabs.each(function (i) {
-//
-//
-//                        var tab_fields = $(this).nextUntil('*[data-form_tab]','span');
-//                        if (tab_fields.length)
+//                        var trgt = ui.item.parents('div').first();
+//                        if (trgt.data('rel') == 'fields_used')
 //                        {
-//                            tab.fields =
+//                            //in
+//
+//                            ui.item.remove();
+//
 //                        } else {
-//                            tab.fields = [];
+//                            //out
+//                            if (fs.indexOf(ui.item.data('rel'))<0) {
+//                                fs.push(ui.item.data('rel'));
+//                            }
 //                        }
-//                        newForm[key] = tab;
-//                        i++;
+//
+//
+//                    }
+//                }).disableSelection();
+//
+//                this.fieldsContainer.sortable({
+//                    connectWith: this.fieldsStackContainer,
+//                    tolerance: 'pointer',
+//                    update: function (event, ui) {
+//
+//
+//                    }
+//
+//                }).disableSelection();
+//
+//
+//            },
+
+//            recollectUsedFields() {
+//
+//                var  tabs_el = this.fieldsContainer.find('*[data-form_tab]');
+//
+//                if (tabs_el.length) {
+//                    var tab_index = 0;
+//                    var fields = {0: []};
+//                    //console.log(tabs_el.get(0));
+//                    var first_tab = $(tabs_el.get(0));
+//                    var tabs = [getTabData(first_tab, 0)];
+//                    first_tab.hide();
+//
+//                    this.fieldsContainer.children(':visible').each(function (i) {
+//
+//
+//                        if ($(this).data('form_tab')) {
+//
+//
+//                            tab_index++;
+//                            tabs.push(getTabData($(this), tab_index));
+//                            fields[tab_index] = [];
+//
+//
+//                        } else {
+//                            fields[tab_index].push($(this).data('rel'));
+//                        }
 //                    });
+//
+//                    first_tab.show();
+//
+//                    var set_tabs = {};
+//
+//                    for (let i=0; i<tabs.length; i++)
+//                    {
+//                        set_tabs[tabs[i].key] = Object.assign({},tabs[i]);
+//                        set_tabs[tabs[i].key].fields = fields[i];
+//                        delete set_tabs[tabs[i].key].key;
+//                    }
+//
+//                    this.$set('form',{fields:[], tabs:set_tabs} );
+//
 //
 //                } else {
-//
-//                    newForm = [];
-//                    $cont.find('*[data-rel]').each (function (i) {
+//                    var newForm = [];
+//                    this.fieldsContainer.find('*[data-rel]').each (function (i) {
 //                        newForm.push($(this).data('rel'));
 //                    });
-//
+//                    this.$set('form',{fields:newForm, tabs:{}} );
 //                }
-
-
-                } else {
-                    var newForm = [];
-                    this.fieldsContainer.find('*[data-rel]').each (function (i) {
-                        newForm.push($(this).data('rel'));
-                    });
-                    this.$set('form',{fields:newForm, tabs:{}} );
-                }
-
-                function getTabData(elem, i) {
-                    var tab = {};
-                    tab.title = $.trim(elem.find('span').text());
-                    if (elem.data('view')) {
-                        tab.view = elem.data('view');
-                    }
-                    var key = 'tab_' + i;
-                    if (elem.data('key')) {
-                        key = elem.data('key');
-                    }
-                    tab.key = key;
-
-                    return tab;
-                }
-
-            }
+//
+//                function getTabData(elem, i) {
+//                    var tab = {};
+//                    tab.title = $.trim(elem.find('span').text());
+//                    if (elem.data('view')) {
+//                        tab.view = elem.data('view');
+//                    }
+//                    var key = 'tab_' + i;
+//                    if (elem.data('key')) {
+//                        key = elem.data('key');
+//                    }
+//                    tab.key = key;
+//
+//                    return tab;
+//                }
+//
+//            }
         },
 
 

@@ -2,8 +2,8 @@
     <!-- modal -->
     <modal id="scope_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <h3 v-if="edit">Edit scope "{{ scopeKey }}"</h3>
-            <h3 v-if="!edit">Add new scope</h3>
+            <template v-if="edit">Edit scope "{{ scopeKey }}"</template>
+            <template v-if="!edit">Add new scope</template>
         </div>
         <div slot="modal-body">
             <form id="scope_form">
@@ -76,35 +76,105 @@
                                 </div>
                             </div>
                             <div class="col-lg-8">
-                                <b>Default sort options</b>
+                                <div class="row" style="margin-right:0px;">
+                                <div class="col-md-12 bg-success">
+                                    <b>Edit form</b>
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                    <select class="form-control default_select" v-model="scope.form" >
+                                        <option value="">Choose form</option>
+                                        <option v-for="(key, f) in model.forms" v-bind:value="key">
+                                            {{ key }}
+                                        </option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="background-color:#f5f5f5; padding-right:0px;">
+                                 <b>Default sort options</b>
+                                 <div class="clearfix"></div>
+
+                                <div class="col-md-6">
                                 <li v-for="(f, o) in scope.sort">
-                                    {{ f }} = {{ o }} <a href="#" class="text-danger" @click.prevent="removeSortOption(f)"><i class="fa fa-times-circle"></i></a>
+                                    {{ f }} &rarr; {{ o }} <a href="#" class="text-danger" @click.prevent="removeSortOption(f)"><i class="fa fa-times-circle"></i></a>
                                 </li>
-                                <a href="#" class="btn btn-primary"  data-click="crud_action"  data-action="wizard_add_list_col" data-skip_arr="1" data-fragment="sort_tpl_{{ ALIAS }}" data-container="list_sorts_{{ ALIAS }}"><i class="fa fa-plus"></i> Add sort option</a>
+                                </div>
+                                <div class="col-md-6" style="padding-right:0px;">
+                                    <label>Field
+                                        <select class="form-control default_select" v-model="newSortField" >
+                                            <option value="">Choose column</option>
+                                            <option v-for="(key, col) in config.table_columns" v-bind:value="col">
+                                                {{ col }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <br />
+                                    <label>Direction
+                                        <select class="form-control default_select"  v-model="newSortDir" >
+                                            <option value="asc">Ascending</option>
+                                            <option value="desc">Descending</option>
+                                        </select>
+                                    </label>
+                                    <br />
+                                    <a href="#" class="btn btn-primary"  @click.prevent="addSortOption()"><i class="fa fa-plus"></i> Add</a>
+                                </div>
+                                </div>
+                                </div>
+
 
                                 <hr />
                                 <div data-rel="is_tree" v-if="model.tree">
                                 <label>
                                     List type
-                                    <select name="list[{{ ALIAS }}][list_type]"  class="form-control default_select" style="width:250px;">
-                                        {% for op_val, op_text in wizard.getAvailableTreeLists() %}
-                                        <option value="{{ op_val }}" {{ list.list_type==op_val?'selected' }}>{{ op_text }}</option>
-                                        {% endfor %}
+                                    <select name="list_type" class="form-control default_select" required>
+                                        <option v-for="(key, type) in config.tree_lists" v-bind:value="key">
+                                            {{ type }}
+                                        </option>
                                     </select>
                                 </label>
                             </div>
                     </div>
                 </div>
-              </div>
+                <hr>
+                    <h3>Columns</h3>
+
+
+                    <div class="col-md-12">
+                        <a href="#" class="btn btn-success pull-right" @click.prevent="addColumn()"><i class="fa fa-plus"></i> Add column</a>
+                        <br>
+                        <table class="table table-striped" id="list_cols">
+                        <tbody  v-sortable="sortableColOptions">
+                        <template v-for="column in scope.list">
+                            <list-column  :column="column"></list-column>
+                        </template>
+                        </tbody>
+                        </table>
+                    </div>
+                    <a href="#" class="btn btn-success pull-right" @click.prevent="addColumn()"><i class="fa fa-plus"></i> Add column</a>
+
+                    <div class="clearfix"></div>
+                    <hr>
+                    <h3>List actions</h3>
+                    <div class="col-md-12 bg-info">
+                    <a href="#" class="btn btn-primary pull-right" @click.prevent="addAction();"><i class="fa fa-plus"></i> Add action</a>
+                    <table class="table table-striped" id="list_actions">
+                        <tbody  v-sortable="sortableColOptions">
+                        <template v-for="(key, a) in scope.list_actions">
+                            <list-action  :action="a" :scope="scope" :key="key"></list-action>
+                        </template>
+                        </tbody>
+                    </table>
+                    <a href="#" class="btn btn-primary pull-right" @click.prevent="addAction();"><i class="fa fa-plus"></i> Add action</a>
+                   </div>
+                    <div class="clearfix"></div>
+
+
+                </div>
             </div>
             </form>
         </div>
         <div slot="modal-footer">
-            <button class="btn btn-success" @click="save()">
-                Save
-            </button>
             <button class="btn btn-default" v-on:click="hide()">
-                Cancel
+                Close
             </button>
         </div>
     </modal>
@@ -119,13 +189,17 @@
     import Modal from './ui/Modal.vue'
     import { getConfig, getModel } from '../vuex/getters'
     import Actions from '../vuex/actions'
+    import ListColumn from './ScopeListColumn.vue'
+    import ListAction from './ScopeListAction.vue'
 
     export default {
 
       name: 'ScopeEdit',
 
       components: {
-          Modal
+          Modal,
+          ListColumn,
+          ListAction
         },
 
         vuex: {
@@ -141,9 +215,13 @@
                 scopeKey: "",
                 edit:false,
                 scope: {},
+                newSortField: '',
+                newSortDir: 'asc',
                 newScope: {
                     title : "",
                     multiselect: true,
+//                    list:[],
+//                    list_actions:[],
                     buttons: {
                         add_new: true,
                         single_edit: true,
@@ -152,10 +230,27 @@
                         customize_columns: false
                     }
                 },
+
+                sortableColOptions: {
+                    handle: ".drag_cols",
+                    onUpdate: (evt) => {
+                        this.scope.list.move(evt.oldIndex,evt.newIndex);
+                    },
+                }
             }
         },
 
         events: {
+
+            'list_action::delete'(key) {
+
+                this.deleteListAction(key);
+            },
+
+            'list_column::delete'(key) {
+
+                this.deleteListColumn(key);
+            },
 
             'scope::new'() {
 
@@ -167,9 +262,11 @@
                 this.edit = true;
                 this.scopeKey = key;
                 this.$broadcast('show::modal','scope_modal');
-                this.initEditScope(this.model.scopes[key]);
-            },
+                this.initEditScope(key);
 
+//                $('#list_cols').sortable({handle:".drag_cols",cursor: "move",axis: "y"});
+//                console.log($('#list_cols'));
+            },
 
         },
 
@@ -177,12 +274,84 @@
             this.initEmptyScope()
         },
 
+
         methods: {
 
+            addAction() {
 
-            initEditScope(scope) {
+                if (typeof  this.scope.list_actions == 'undefined') {
+                    this.$set('scope.list_actions', []);
+                }
 
-                this.$set('scope',scope);
+                this.scope.list_actions.push({title:'New action', });
+            },
+
+            addColumn() {
+
+                if (typeof  this.scope.list == 'undefined') {
+                    this.$set('scope.list',[]);
+                }
+
+                this.scope.list.push({data:'', });
+            },
+            addSortOption() {
+
+                if (this.newSortField == '')
+                {
+                    swal('Choose field','','warning');
+                    return false;
+                }
+
+                if (typeof this.scope.sort == 'undefined') {
+                    this.$set('scope.sort',{});
+                }
+                Vue.set(this.scope.sort,this.newSortField,this.newSortDir);
+
+                this.newSortField = '';
+                this.newSortDir = 'asc'
+            },
+
+            deleteListAction(key) {
+
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this action!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!"
+                        })
+                        .then(() => {
+
+                            this.scope.list_actions.splice(key, 1);
+
+                        }, () => {});
+
+            },
+
+            deleteListColumn(key) {
+
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this column!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!"
+                        })
+                        .then(() => {
+
+                            this.scope.list.splice(key, 1);
+
+                        }, () => {});
+
+            },
+
+            initEditScope(key) {
+
+                this.$set('scope',JSON.parse(JSON.stringify(this.model.scopes[key])));
             },
 
             initEmptyScope() {
@@ -199,6 +368,23 @@
                 this.$broadcast('hide::modal', 'scope_modal')
             },
 
+            removeSortOption(f) {
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!"
+                        })
+                        .then(() => {
+
+                            Vue.delete(this.scope.sort, f);
+
+                        }, () => {});
+
+            },
             save() {
 
                 Actions.validateForm($('form#scope_form'), () => {

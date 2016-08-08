@@ -330,7 +330,7 @@ class Wizard
      * @param $force If use cached values or force recreate
      * @return mixed
      */
-    function getModelConfig($table_name, $force=false)
+    function getModelConfig($table_name, $force=false, $asJSON = true)
     {
 
         if (!isset($this->model_configs[$table_name]) || $force)
@@ -338,22 +338,26 @@ class Wizard
             if (file_exists(config_path('crud/'.$table_name.'.php')))
             {
                 $this->model_configs[$table_name] = $this->app['config']->get('crud.'.$table_name);
-                $this->model_configs[$table_name]['filters'] = [];
+                //$this->model_configs[$table_name]['filters'] = [];
                 if (!empty($this->model_configs[$table_name]['list']))
                 {
-                    foreach ($this->model_configs[$table_name]['list'] as $alias => $list)
-                    {
-                        if (!empty($list['filter']))
-                        {
-                            $this->model_configs[$table_name]['filters'][$alias] = $list['filter'];
-                        }
-                    }
+//                    foreach ($this->model_configs[$table_name]['list'] as $alias => $list)
+//                    {
+//                        if (!empty($list['filter']))
+//                        {
+//                            $this->model_configs[$table_name]['filters'][$alias] = $list['filter'];
+//                        }
+//                    }
                 }
             } else {
                 $this->model_configs[$table_name] = false;
             }
         }
 
+        if ($asJSON)
+        {
+            return json_encode($this->model_configs[$table_name], JSON_NUMERIC_CHECK);
+        }
         return $this->model_configs[$table_name];
 
     }
@@ -683,24 +687,7 @@ class Wizard
     }
 
 
-    /**
-     * Get available formatters for model by it's table name
-     *
-     * @param $table
-     * @return array
-     */
-    public function getAvailableFormatters($table)
-    {
-        $formatters = [];
-        $config = $this->getModelConfig($table);
-        if (!empty($config) && isset($config['name']))
-        {
-            $obj = CrudModel::createInstance($config['name']);
-            $formatters = $obj->getAvailFormatters();
-        }
 
-        return $formatters;
-    }//
 
     /**
      * Get available slect options providers for model
@@ -852,12 +839,29 @@ class Wizard
         return self :: $controls[$type];
     }
 
+    public function getModelAccessors($model)
+    {
+        $obj = CrudModel::createInstance($model);
+        return $obj->getMutatedAttributes();
+    }
+
+    public function getModelAttributes($model)
+    {
+        $obj = CrudModel::createInstance($model);
+        return array_merge($this->getTableColumns($obj->getTable()), $obj->getMutatedAttributes());
+
+
+    }
+
+
     public function getWizardConfig($table)
     {
-        $modelConfig = $this->getModelConfig($table);
+        $modelConfig = $this->getModelConfig($table, false, false);
+        $obj = CrudModel::createInstance($modelConfig['name']);
         return [
             'acls' => $this->app['config']['acl.acls'],
             'table_columns' => $this->getTableColumns($table),
+            'table_int_columns' => $this->getIntTableColumns($table),
             'track_history_options' => $this->getTrackHistoryOptions(),
             'relation_options' => $this->getRelations(),
             'all_models' => $this->getAvailableModels('snake_case'),
@@ -869,7 +873,10 @@ class Wizard
             'editor_types' => $this->getAvailableEditors(),
             'date_formats' => $this->getAvailableDateFormats(),
             'date_time_formats' => $this->getAvailableDateTimeFormats(),
-            'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name'])
+            'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
+            'tree_lists' => $this->getAvailableTreeLists(),
+            'attrs' => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
+            'formatters' => $obj->getAvailFormatters()
 
 
         ];
@@ -883,6 +890,14 @@ class Wizard
         }
 
         return true;
+    }
+
+    public  function saveModel($table, $json)
+    {
+        $data = json_decode($json, 1);
+        $proto = new CrudModelPrototype($table, $data);
+        return $proto->record();
+
     }
 
 

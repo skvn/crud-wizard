@@ -98,9 +98,7 @@
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "Yes, delete it!",
-                                closeOnConfirm: false,
-                                closeOnCancel: false
+                                confirmButtonText: "Yes, delete it!"
                             })
                             .then(function () {
 
@@ -129,7 +127,10 @@
                     }
                 }
 
-                console.log(JSON.stringify(this.model));
+                var page_url = Actions.apiUrl +'saveModel'
+                this.$http.post(page_url,{args:[this.table,JSON.stringify(this.model)]}).then((resp)=>{
+                    console.log(resp.json());
+                });
             },
 
             deleteField(key) {
@@ -142,9 +143,8 @@
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "Yes, delete it!",
-                            closeOnConfirm: false,
-                            closeOnCancel: false
+                            confirmButtonText: "Yes, delete it!"
+
                 })
                 .then(() => {
 

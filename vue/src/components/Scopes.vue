@@ -62,6 +62,8 @@ import { getConfig, getModel } from '../vuex/getters'
                         return item.data;
                     });
                 }
+
+                return [];
             },
 
             deleteScope(key) {
@@ -74,9 +76,7 @@ import { getConfig, getModel } from '../vuex/getters'
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",
-                            confirmButtonText: "Yes, delete it!",
-                            closeOnConfirm: false,
-                            closeOnCancel: false
+                            confirmButtonText: "Yes, delete it!"
                         })
                         .then(() => {
 

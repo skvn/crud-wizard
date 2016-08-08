@@ -2,8 +2,8 @@
     <!-- modal -->
     <modal id="relation_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <h3 v-if="edit">Edit relation "{{ relation.title }}"</h3>
-            <h3 v-if="!edit">Add new  relation</h3>
+            <template v-if="edit">Edit relation "{{ relation.title }}"</template>
+            <template v-if="!edit">Add new  relation</template>
         </div>
         <div slot="modal-body">
             <form id="relation_form">
@@ -34,11 +34,11 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-6  form-group" v-if="relation.relation=='belongsTo'">
+                        <div class="col-md-6  form-group" v-if="relation.relation=='belongsTo' || relation.relation=='hasFile'">
                             <label>Field (local key)
                                 <select class="form-control default_select" name="field" v-model="relation.field"  :value="relation.field" required >
                                     <option value="">Choose Local key</option>
-                                    <option v-for="(key, col) in config.table_columns" v-bind:value="col">
+                                    <option v-for="(key, col) in config.table_int_columns" v-bind:value="col">
                                         {{ col }}
                                     </option>
                                 </select>

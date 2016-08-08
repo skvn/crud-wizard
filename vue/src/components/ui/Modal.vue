@@ -4,7 +4,9 @@
             <div class="modal-dialog  modal-{{size}}" role="document" style="z-index: 9999">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <slot name="modal-header"></slot>
+                        <button type="button" class="close" @click="hide();"><span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title"><slot name="modal-header"></slot></h4>
+
                     </div>
                     <div class="modal-body">
                         <slot name="modal-body"></slot>

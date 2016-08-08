@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Resource from 'vue-resource'
 import Router from 'vue-router'
 import Vuex from 'vuex'
+import Sortable from 'vue-sortable'
+
+import swal from 'sweetalert2'
 
 import App from './components/App.vue'
 import General from './components/General.vue'
@@ -10,12 +13,14 @@ import Fields from './components/Fields.vue'
 import Forms from './components/Forms.vue'
 import Scopes  from './components/Scopes.vue'
 
+
 import store from './vuex/store'
 
 
-Vue.use(Resource)
-Vue.use(Router)
-Vue.use(Vuex)
+Vue.use(Resource);
+Vue.use(Router);
+Vue.use(Vuex);
+Vue.use(Sortable);
 
 
 export var router = new Router()

@@ -2,8 +2,8 @@
     <!-- modal -->
     <modal id="field_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <h3 v-if="edit">Edit field "{{ relation.title }}"</h3>
-            <h3 v-if="!edit">Add new  field</h3>
+            <template v-if="edit">Edit field "{{ relation.title }}"</template>
+            <template v-if="!edit">Add new  field</template>
         </div>
         <div slot="modal-body">
             <form id="field_form">
@@ -64,7 +64,7 @@
                                 </option>
                             </select>
                             <label> End field</label>
-                            <select class="form-control default_select" :value="field.fields[1]"  v-model="field.fields[1]" name="start_field" required >
+                            <select class="form-control default_select" :value="field.fields[1]"  v-model="field.fields[1]" name="end_field" required >
                                 <option value="">Choose field</option>
                                 <option v-for="f in config.table_columns | filterBy notUsedField"  v-bind:value="f">
                                     {{ f }}

@@ -54,6 +54,21 @@
                 </div>
 
 
+
+
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label for="dialog_width">Audit trail. Track model changes</label>
+                    <select name="track_history" id="track_history"
+                            class="form-control default_select" style="width:250px;"
+                            v-model="$parent.model.track_history">
+                        <option v-for="(value, text) in $parent.config.track_history_options" v-bind:value="value">
+                            {{ text }}
+                        </option>
+
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="ent_name_r">(Russian only) Model entity name (Родительный
                         падеж)</label>
@@ -71,20 +86,6 @@
                     <label for="dialog_width">Modal dialog width (optional)</label>
                     <input type="text" class="form-control" id="dialog_width"
                            name="dialog_width" v-model="$parent.model.dialog_width"/>
-                </div>
-
-            </div>
-            <div class="col-lg-6">
-                <div class="form-group">
-                    <label for="dialog_width">Audit trail. Track model changes</label>
-                    <select name="track_history" id="track_history"
-                            class="form-control default_select" style="width:250px;"
-                            v-model="$parent.model.track_history">
-                        <option v-for="(value, text) in $parent.config.track_history_options" v-bind:value="value">
-                            {{ text }}
-                        </option>
-
-                    </select>
                 </div>
             </div>
         </div>

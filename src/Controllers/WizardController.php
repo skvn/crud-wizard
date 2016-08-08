@@ -52,19 +52,9 @@ class WizardController extends Controller {
 
     function model($table)
     {
-        if ($this->request->isMethod('post'))
-        {
 
 
-            $data = json_decode($this->request->get('model_json'), 1);
-            $data['table'] = $table;
-            $proto = new CrudModelPrototype($data);
-            return $proto->record();
-            
-        }
-
-
-        $model = $this->wizard->getModelConfig($table);
+        $model = $this->wizard->getModelConfig($table, false, false);
         if (!$model)
         {
             if (!empty($this->request->get('model'))) {
@@ -133,48 +123,47 @@ class WizardController extends Controller {
     {
         return $this->wizard->$method(...\Request::get('args',[]));
     }
-
-    function getFieldRowTpl($field_name)
-    {
-        return view('crud-wizard::blocks/fields/field_row', ['f'=>$field_name]);
-    }
-    
-    function migrationCreate()
-    {
-        $migrator = new Migrator($this->request);
-
-        if ($migrator->createTable()->migrate())
-        {
-             return redirect()->back();
-
-        } else {
-
-            return redirect()->back()->with('error', $migrator->error);
-        }
-    
-    }
-
-    function migrationAlter(Request $req)
-    {
-        $table = $req->get('table_name');
-        $columns = $req->get('columns');
-        
-        if (empty($table) || empty($columns))
-        {
-            throw new WizardException('No table name or columns specified');
-        }
-
-        
-
-        $options = ['name'=>"add_".$table];
-        $command = "make:migration:schema";
-        \Artisan::call($command, $options);
-
-        \Artisan::call("migrate", ['--force'=>true,'--quiet'=>true]);
-
-        return redirect()->back();
-
-    }
+//
+//    function getFieldRowTpl($field_name)
+//    {
+//        return view('crud-wizard::blocks/fields/field_row', ['f'=>$field_name]);
+//    }
+//
+//    function migrationCreate()
+//    {
+//        $migrator = new Migrator($this->request);
+//
+//        if ($migrator->createTable()->migrate())
+//        {
+//             return redirect()->back();
+//
+//        } else {
+//
+//            return redirect()->back()->with('error', $migrator->error);
+//        }
+//
+//    }
+//
+//    function migrationAlter(Request $req)
+//    {
+//        $table = $req->get('table_name');
+//        $columns = $req->get('columns');
+//
+//        if (empty($table) || empty($columns))
+//        {
+//            throw new WizardException('No table name or columns specified');
+//        }
+//
+//
+//        $options = ['name'=>"add_".$table];
+//        $command = "make:migration:schema";
+//        \Artisan::call($command, $options);
+//
+//        \Artisan::call("migrate", ['--force'=>true,'--quiet'=>true]);
+//
+//        return redirect()->back();
+//
+//    }
 
 
 }

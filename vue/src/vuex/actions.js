@@ -40,6 +40,19 @@ Actions.validateForm = function ($form, callback) {
     return callback();
 };
 
+Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+};
+
+Array.prototype.uniqueMerge = function( a ) {
+    for ( var nonDuplicates = [], i = 0, l = a.length; i<l; ++i ) {
+        if ( this.indexOf( a[i] ) === -1 ) {
+            nonDuplicates.push( a[i] );
+        }
+    }
+    return this.concat( nonDuplicates )
+};
+
 
 
 
