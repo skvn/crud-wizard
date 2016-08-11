@@ -1,7 +1,7 @@
 <template>
 
-    <a href="#" class="btn btn-success" @click.prevent="$broadcast('scope::new')"><i class="fa fa-plus"></i>
-        Add scope</a>
+    <add-scope-btn></add-scope-btn>
+
     <br />
     <br />
     <table class="table table-striped">
@@ -24,8 +24,7 @@
         </tr>
     </table>
 
-    <a href="#" class="btn btn-success" @click.prevent="$broadcast('scope::new')"><i class="fa fa-plus"></i>
-        Add scope</a>
+    <add-scope-btn></add-scope-btn>
 
    <scope-edit></scope-edit>
 
@@ -34,11 +33,13 @@
 <script>
 import Vue from 'vue';
 import ScopeEdit from './ScopeEdit.vue'
+import AddScopeBtn from './AddScopeBtn.vue'
 import { getConfig, getModel } from '../vuex/getters'
 
     export default{
         components:{
-            ScopeEdit
+            ScopeEdit,
+            AddScopeBtn
         },
 
         vuex: {
@@ -51,9 +52,19 @@ import { getConfig, getModel } from '../vuex/getters'
 
         data(){
             return {
+                new_scope_alias: ''
             }
         },
         methods: {
+
+            addScope(alias) {
+                if (alias == '')
+                {
+                    swal('Oh no : (','Please, choose model scope first.','warning');
+                    return false;
+                }
+                this.$broadcast('scope::new', alias);
+            },
 
             getListCols(list) {
 

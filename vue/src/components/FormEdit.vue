@@ -301,7 +301,6 @@
                 Actions.validateForm($('form#form_form'), () => {
 
 
-
                     if (this.tabs.length <=0) {
                         var form_arr = [];
                         this.fields.forEach(function (f, i) {
@@ -324,7 +323,7 @@
                         {
                             this.fields.move(first_tab_ind, 0);
                         }
-                        
+
                         var form_obj = {};
                         var current_alias = '';
                         this.fields.forEach((f, i) => {

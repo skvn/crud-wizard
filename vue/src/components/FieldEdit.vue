@@ -2,7 +2,7 @@
     <!-- modal -->
     <modal id="field_modal" size="lg" :fade="true">
         <div slot="modal-header">
-            <template v-if="edit">Edit field "{{ relation.title }}"</template>
+            <template v-if="edit">Edit field "{{ field.title }}"</template>
             <template v-if="!edit">Add new  field</template>
         </div>
         <div slot="modal-body">
@@ -179,7 +179,9 @@
                     type:'',
                     key: ''
                 },
-                edit: false
+                edit: false,
+
+                field_config: {}
 
             }
         },
@@ -191,13 +193,14 @@
                 this.initEmptyField()
                 this.field.key = key;
                 this.field.type = type;
-                Object.assign(this.field, this.config.field_defaults[type]);
+                this.initFieldConfig(true);
             },
 
             'field::edit'(key) {
                 this.edit = true;
                 this.field = this.model.fields[key];
                 this.field.key = key;
+                this.initFieldConfig();
             },
 
             'hide::modal'(id) {
@@ -222,11 +225,26 @@
                 });
 
             },
+
+            initFieldConfig(assign_defaults) {
+                alert(this.field.type);
+                console.log(this.config.fields_config);
+                this.$set('field_config',this.config.fields_config[this.field.type]);
+                if (assign_defaults) {
+                    Object.assign(this.field, this.field_config.defaults);
+                }
+            },
+
+            isCustomField() {
+                return this.field_config.custom;
+            },
+
             showField(field_name) {
 
+                console.log(this.field_config['sections']);
 
-                if (typeof this.config.field_section_config[this.field.type] == 'object' &&
-                        this.config.field_section_config[this.field.type].indexOf(field_name)>=0)
+                if (typeof this.field_config['sections'] == 'object'
+                        && this.field_config['sections'].indexOf(field_name)>=0)
                 {
                     return true;
                 }

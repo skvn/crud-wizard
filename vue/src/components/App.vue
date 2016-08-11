@@ -129,7 +129,10 @@
 
                 var page_url = Actions.apiUrl +'saveModel'
                 this.$http.post(page_url,{args:[this.table,JSON.stringify(this.model)]}).then((resp)=>{
-                    console.log(resp.json());
+                    var res = resp.json();
+                    if (typeof res.success != 'undefined' &&  res.success) {
+                        swal('Ohh yeah','success');
+                    }
                 });
             },
 

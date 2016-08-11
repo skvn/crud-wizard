@@ -72,7 +72,7 @@ import { getConfig, getModel } from '../vuex/getters'
                     return false;
                 }
 
-                if (this.new_field_key_new == '' && this.config.field_defaults[this.new_field_type]['is_for_virtual']) {
+                if (this.new_field_key_new == '' && this.config.fields_config[this.new_field_type]['is_for_virtual']) {
                     swal('Oh no : (','This field type can be used only with a virtual property. Please enter a new property.','warning');
                     return false;
                 }

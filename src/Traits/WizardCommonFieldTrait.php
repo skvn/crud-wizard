@@ -94,6 +94,16 @@ trait WizardCommonFieldTrait
     {
 
     }
-    
+
+
+    /**
+     * If the field is custom, it's not fully configurated via UI
+     *
+     * @return boolean
+     */
+    public function wizardIsCustomField(): bool
+    {
+        return false;
+    }
 
 }

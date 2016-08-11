@@ -3,6 +3,7 @@
                 <td style="width:20px;cursor: move" class="drag_cols" ><i class="fa fa-arrows-v"></i></td>
                 <td style="width:350px;" nowrap="nowrap">
 
+                    <div class="form-group">
                     <label>Data provider</label>
                     <br>
                     <select  class="form-control default_select" v-model="data_type" >
@@ -32,14 +33,17 @@
                             {{ k }}
                         </option>
                     </select>
+                     </div>
 
 
                 </td>
                 <td valign="top" style="width:150px;">
+                    <div class="form-group">
                     <label>Title
-                        <input type="text" data-rel="title" class="form-control" name="title"  value="{{ column.title }}"  placeholder="Title *" required style="width: 150px" >
+                        <input type="text" data-rel="title" class="form-control" name="title"  :value="column.title" v-model="column.title"  placeholder="Title *" required style="width: 150px" >
                     </label>
-                    <div>
+                    </div>
+                    <div class="form-group">
                         <label>
                             Formatter
                             <select class="form-control default_select" style="max-width: 150px;" v-model="column.format" >
@@ -157,8 +161,15 @@
                         });
                     }
 
+                    this.column.data = val+'::'+this.relation_prop;
+
                 }
-            }
+            },
+
+            'relation_prop': function (val, prev) {
+                this.column.data = this.relation +'::'+this.relation_prop;
+            },
+
         }
 
     }

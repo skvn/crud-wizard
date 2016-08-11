@@ -12,7 +12,16 @@
                     </label><br>
 
                     <label v-if="action_type=='method'">
-                        Model method *  <input type="text"  class="form-control" :value="action.command" v-model="action.command" name="command">
+                        Choose method *
+                        <!--<select class="form-control default_select" v-model="action.command" required>-->
+                            <!--<option value="">No method</option>-->
+                            <!--<option v-for="f in config.commands" v-bind:value="f.name">-->
+                                <!--{{ f.name }} ({{ f.description }})-->
+                            <!--</option>-->
+                        <!--</select>-->
+
+                        <input type="text"  class="form-control" :value="action.command" v-model="action.command" name="command">
+
                     </label>
 
                     <label v-if="action_type=='event'">
@@ -76,10 +85,20 @@
 <script>
 
     import Vue from 'vue';
+    import { getConfig, getModel } from '../vuex/getters'
+
 
     export default{
 
         name: 'ScopeListAction',
+
+        vuex: {
+            getters: {
+                config: getConfig,
+                model: getModel
+            }
+
+        },
 
         data(){
             return{

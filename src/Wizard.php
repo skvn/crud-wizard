@@ -786,24 +786,31 @@ class Wizard
 
     }
 
-    public function getFieldsSectionConfig()
-    {
-        $ret = [];
-        foreach (self :: getAvailControls() as $control)
-        {
-            $ret[$control->controlType()] = $control->wizardConfigSections();
-        }
-
-        return $ret;
-    }
+//    public function getFieldsConfig()
+//    {
+//        $ret = [];
+//        foreach (self :: getAvailControls() as $control)
+//        {
+//            $ret[$control->controlType()] = [
+//
+//            ];
+//        }
+//
+//        return $ret;
+//    }
 
     public function getFieldsConfigDefaults()
     {
         $ret = [];
         foreach (self :: getAvailControls() as $control)
         {
-            $ret[$control->controlType()] = $control->wizardConfigDefaults();
-            $ret[$control->controlType()]['is_for_virtual'] = $control->wizardIsForVirtualOnly();
+            $ret[$control->controlType()]   = [
+                'defaults' =>$control->wizardConfigDefaults(),
+                'is_for_virtual' => $control->wizardIsForVirtualOnly(),
+                'sections' => $control->wizardConfigSections(),
+                'custom' => $control->wizardIsCustomField()
+
+            ];
         }
 
         return $ret;
@@ -848,7 +855,9 @@ class Wizard
     public function getModelAttributes($model)
     {
         $obj = CrudModel::createInstance($model);
-        return array_merge($this->getTableColumns($obj->getTable()), $obj->getMutatedAttributes());
+        $cols = array_unique(array_merge($this->getTableColumns($obj->getTable()), $obj->getMutatedAttributes()));
+        sort($cols);
+        return $cols;
 
 
     }
@@ -868,15 +877,16 @@ class Wizard
             'on_delete_actions' => $this->getOndeleteActions(),
             'pivot_tables' => $this->getPossiblePivotTables(),
             'field_options' => $this->getAvailableFieldTypes(),
-            'field_section_config' => $this->getFieldsSectionConfig(),
-            'field_defaults' => $this->getFieldsConfigDefaults(),
+            //'fields_config' => $this->getFieldsConfig(),
+            'fields_config' => $this->getFieldsConfigDefaults(),
             'editor_types' => $this->getAvailableEditors(),
             'date_formats' => $this->getAvailableDateFormats(),
             'date_time_formats' => $this->getAvailableDateTimeFormats(),
             'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
             'tree_lists' => $this->getAvailableTreeLists(),
             'attrs' => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
-            'formatters' => $obj->getAvailFormatters()
+            'formatters' => $obj->getAvailFormatters(),
+            'scopes' => $obj->getAvailScopes()
 
 
         ];
@@ -884,7 +894,7 @@ class Wizard
 
     public function isRelationMultiple($relation)
     {
-        if (in_array($relation,['hasOne','belongsTo']))
+        if (in_array($relation,['hasOne','belongsTo', 'morhTo']))
         {
             return false;
         }

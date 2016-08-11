@@ -3,28 +3,32 @@
     <modal id="scope_modal" size="lg" :fade="true">
         <div slot="modal-header">
             <template v-if="edit">Edit scope "{{ scopeKey }}"</template>
-            <template v-if="!edit">Add new scope</template>
+            <template v-if="!edit">Add new scope "{{ scopeKey }}"</template>
         </div>
         <div slot="modal-body">
             <form id="scope_form">
             <div class="card">
                 <div style="padding:10px;">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                <label>Scope title</label>
-                                <input type="text" class="form-control" placeholder="New scope"  name="title" :value="scope.title" v-model="scope.title"  required />
-                                </div>
-                            </div>
+                        <!--<div class="row">-->
+                            <!--<div class="col-lg-6">-->
+                                <!---->
+                            <!--</div>-->
 
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label>Scope alias</label>
-                                    <input type="text" class="form-control" placeholder="new_scope"  name="alias" :value="scopeKey" v-model="scopeKey"  required />
-                                </div>
-                            </div>
+                            <!--&lt;!&ndash;<div class="col-lg-6">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<label>Scope alias</label>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<input type="text" class="form-control" placeholder="new_scope"  name="alias" :value="scopeKey" v-model="scopeKey"  required />&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
 
+                          <!--</div>-->
+                         <div class="row">
                             <div class="col-lg-4">
+
+                                <div class="form-group">
+                                    <label>Scope title</label>
+                                    <input type="text" class="form-control" placeholder="New scope"  name="title" :value="scope.title" v-model="scope.title"  required />
+                                </div>
 
                                 <div class="form-group">
                                     <label class="checkbox-inline">
@@ -138,9 +142,9 @@
                     <h3>Columns</h3>
 
 
+                    <a href="#" class="btn btn-success pull-right" @click.prevent="addColumn()"><i class="fa fa-plus"></i> Add column</a>
+                    <br>
                     <div class="col-md-12">
-                        <a href="#" class="btn btn-success pull-right" @click.prevent="addColumn()"><i class="fa fa-plus"></i> Add column</a>
-                        <br>
                         <table class="table table-striped" id="list_cols">
                         <tbody  v-sortable="sortableColOptions">
                         <template v-for="column in scope.list">
@@ -173,6 +177,10 @@
             </form>
         </div>
         <div slot="modal-footer">
+            <button class="btn btn-success" @click="save()">
+                Save
+            </button>
+
             <button class="btn btn-default" v-on:click="hide()">
                 Close
             </button>
@@ -252,9 +260,9 @@
                 this.deleteListColumn(key);
             },
 
-            'scope::new'() {
+            'scope::new'(alias) {
 
-                this.initEmptyScope();
+                this.initEmptyScope(alias);
                 this.$broadcast('show::modal','scope_modal');
             },
 
@@ -292,7 +300,7 @@
                     this.$set('scope.list',[]);
                 }
 
-                this.scope.list.push({data:'', });
+                this.scope.list.push({data:'', format:'' });
             },
             addSortOption() {
 
@@ -354,10 +362,15 @@
                 this.$set('scope',JSON.parse(JSON.stringify(this.model.scopes[key])));
             },
 
-            initEmptyScope() {
+            initEmptyScope(alias) {
 
-                if (this.model && this.model.scopes && Array.isArray(this.model.scopes)) {
-                    this.scopeKey = 'scope_' + Object.keys(this.model.scopes).length;
+//                if (this.model && this.model.scopes) {
+//                    this.$set('scopeKey','scope_' + Object.keys(this.model.scopes).length);
+//                } else {
+//                    this.$set('scopeKey','default');
+//                }
+                if (alias) {
+                    this.$set('scopeKey',alias);
                 }
                 this.$set('scope',this.newScope);
             },
@@ -389,7 +402,7 @@
 
                 Actions.validateForm($('form#scope_form'), () => {
 
-
+                    Vue.set(this.model.scopes,this.scopeKey,this.scope);
                     this.hide();
 
                 });

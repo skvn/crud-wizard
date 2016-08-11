@@ -199,53 +199,6 @@ class CrudModelPrototype
 
                 }
 
-
-
-//                else if ($rel['relation'] == 'belongsToMany' && isset($rel['pivot']) &&  $rel['pivot'] == '1') {
-//                    $rel_arr['pivot_table'] = $rel['pivot_table'];
-//                    $rel_arr['pivot_self_key'] = $rel['pivot_self_key'];
-//                    $rel_arr['pivot_foreign_key'] = $rel['pivot_foreign_key'];
-//                } else {
-//                    if (!empty($rel['pivot_table']))
-//                    {
-//                        $rel_arr['pivot_table'] = $rel['pivot_table'];
-//                        $rel_arr['pivot_self_key'] = $rel['pivot_self_key'];
-//                        $rel_arr['pivot_foreign_key'] = $rel['pivot_foreign_key'];
-//                    }
-//                }
-//
-//                if (!empty($rel['field'])) {
-//                    $rel_arr['field'] = $rel['field'];
-//                }
-//
-//                if (!empty($rel['editable'])) {
-//                    $rel_arr['editable'] = 1;
-//                    if (!empty($rel['find'])) {
-//                        $rel_arr['find'] = $rel['find'];
-//                    }
-//                    $rel_arr['type'] = $rel['type'];
-//
-//                    if (!empty($rel['required'])) {
-//                        $rel_arr['required'] = 1;
-//                    }
-//
-//                }
-//
-//
-//                if (!empty($rel['on_delete'])) {
-//
-//                    $rel_arr['on_delete'] = $rel['on_delete'];
-//                }
-//
-//
-//                if (!empty($rel['sort'])) {
-//
-//                    if (is_array($rel['sort']) && count($rel['sort'])) {
-//                        $rel_arr['sort'] = $rel['sort'];
-//                    }
-//
-//                }
-
             }
 
         }
@@ -285,11 +238,15 @@ class CrudModelPrototype
                     }
                     elseif (! empty($f['fields']))
                     {
-                        if (!isset($this->column_types[$f['fields'][0]])) {
-                            $this->add_fields[$f['fields'][0]] = $f;
+                        if (isset($f['fields'][0])) {
+                            if (!isset($this->column_types[$f['fields'][0]])) {
+                                $this->add_fields[$f['fields'][0]] = $f;
+                            }
                         }
-                        if (!isset($this->column_types[$f['fields'][1]])) {
-                            $this->add_fields[$f['fields'][1]] = $f;
+                        if (isset($f['fields'][1])) {
+                            if (!isset($this->column_types[$f['fields'][1]])) {
+                                $this->add_fields[$f['fields'][1]] = $f;
+                            }
                         }
                     }
                 }
@@ -351,10 +308,6 @@ class CrudModelPrototype
             }
         }
 
-//        if (empty($this->config_data['dialog_width']))
-//        {
-//            $this->config_data['dialog_width'] = 1000;
-//        }
 
         $this->clearDefaults();
         return $this->config_data;
@@ -524,187 +477,7 @@ class CrudModelPrototype
 //    }//
 //
 //
-//    /**
-//     * Prepare lists config
-//     *
-//     */
-//    private function processLists()
-//    {
-//
-//        if (!empty($this->config_data['list']))
-//        {
-//            foreach ($this->config_data['list'] as $alias=>$list)
-//            {
-//
-//                //sort
-//                if (!empty($list['sort']))
-//                {
-//                    $sort = [];
-//                    foreach ($list['sort'] as $row)
-//                    {
-//                        if (!empty($row['column'])) {
-//                            $sort[$row['column']] = $row['order'];
-//                        }
-//                    }
-//
-//                    $this->config_data['list'][$alias]['sort'] = $sort;
-//                }
-//                //form
-//                if (empty($list['form_tabs']) && !empty($list['form'])) {
-//
-//                    $this->config_data['list'][$alias]['form'] = explode(",",$list['form']);
-//
-//                } else if (!empty($list['form_tabs'])) {
-//
-//
-//                    $form_tabs = json_decode($list['form_tabs'], true);
-//                    //var_dump($form_tabs);
-//                    unset( $this->config_data['list'][$alias]['form_tabs']);
-//                    $tabs = [];
-//                    foreach ($form_tabs as $i=>$tab)
-//                    {
-//                        if (!empty($tab['alias']))
-//                        {
-//                            $tab_alias = $tab['alias'];
-//                        } else {
-//                            $tab_alias = 'tab_'.$i;
-//                        }
-//
-//                        $oldTab = $this->old_config_data['scopes'][$alias]['form'][$tab_alias]??[];
-//                        unset($oldTab['fields']);
-//                        $tabs[$tab_alias] = array_merge(['title'=>$tab['title']],$oldTab);
-//                        $tabs[$tab_alias]['fields'] = $tab['fields']??[];
-//
-//                    }
-//
-//                    $this->config_data['list'][$alias]['form'] = $tabs;
-//                    //$this->config_data['list'][$alias]['tabs'] = $tabs;
-//                   // $this->config_data['list'][$alias]['form_tabbed'] = 1;
-//
-//                }
-//
-//                $searchable = 0;
-//                //columns
-//                if (!empty($list['columns']))
-//                {
-//                    $cols = [];
-//                    foreach ($list['columns'] as $k=>$column)
-//                    {
-//
-//                        if (!is_numeric($k))
-//                        {
-//                            continue;
-//                        }
-//                        if (!empty($column['data_col']))
-//                        {
-//                            $column['data'] = $column['data_col'];
-//
-//
-//                        } else if (!empty($column['data_rel']))
-//                        {
-//                            $column['data'] = $column['data_rel'].'::'.$column['data_rel_attr'];
-//                        }
-//
-//                        if (empty($column['data'] ))
-//                        {
-//                            continue;
-//                        }
-//
-//                        if (isset($column['data_rel'])) {
-//                            unset($column['data_rel']);
-//                        }
-//                        if (isset($column['data_rel_attr'])) {
-//                            unset($column['data_rel_attr']);
-//                        }
-//                        if (isset($column['data_col'])) {
-//                            unset($column['data_col']);
-//                        }
-//                        if (!empty($column['hint']))
-//                        {
-//                            $column['hint'] = ['default' => $column['hint']];
-//
-//                        }
-//                        if (!empty($column['searchable']))
-//                        {
-//                            $searchable = 1;
-//                        }
-//
-//                        $cols[] = $column;
-//                    }
-//                    $this->config_data['list'][$alias]['searchable'] = $searchable;
-//                    unset($this->config_data['list'][$alias]['columns']);
-//                    $this->config_data['list'][$alias]['list'] = $cols;
-//                }
-//
-//                //actions
-//                if (!empty($list['list_actions'])) {
-//                    $actions = [];
-//                    foreach ($list['list_actions'] as $k=> $action) {
-//
-//                        if (!is_numeric($k))
-//                        {
-//                            unset ($this->config_data['list'][$alias]['list_actions'][$k]);
-//                        }
-//                        if (is_array($action)&&
-//                            (!empty($action['command']) || !empty($action['event'])  || !empty($action['popup'])))
-//                        {
-//                            $actions[] = $action;
-//                        }
-//                    }
-//
-//                    if (count($actions)) {
-//                        $this->config_data['list'][$alias]['list_actions'] = $actions;
-//                    } else {
-//                        unset($this->config_data['list'][$alias]['list_actions']);
-//                    }
-//                }
-//
-//                if (empty($this->config_data['is_tree']) && isset($this->config_data['list'][$alias]['list_type']))
-//                {
-//                    unset($this->config_data['list'][$alias]['list_type']);
-//                }
-//
-//            }
-//
-//        }
-//
-//
-//    }//
-//
-//    /**
-//     * Prepare config data for recording
-//     */
-//    private function prepareConfigData()
-//    {
-//
-//
-//        if (!empty($this->config_data['track_history'])) {
-//            $this->config_data['traits'][] = $this->app['config']['crud_common.history_trait'];
-//        }
-//
-//        if (!empty($this->config_data['is_tree'])) {
-//            $this->config_data['traits'][] = $this->app['config']['crud_common.tree_trait'];
-//        }
-//
-//
-//    }//
-//
-//    /**
-//     * Record config and model files
-//     */
-//    public  function record()
-//    {
-//
-//        $this->recordConfig();
-//        $this->recordModels();
-//        $this->recordMigrations();
-//        $this->migrate();
-//
-//        return ['success'=>true];
-//
-//
-//    }
-//
+
 
 //
 //    /**
