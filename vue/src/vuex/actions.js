@@ -18,9 +18,8 @@ Actions.fetchConfig = function ({ dispatch}, table) {
 
 Actions.fetchModel = function ({ dispatch }, table) {
     var page_url = apiUrl +'getModelConfig';
-    Vue.http.get(page_url, {params:{args:[table]}})
-        .then((response) => dispatch('SET_MODEL', response.json()))
-        .catch((error) => Promise.reject(error));
+    return Vue.http.get(page_url, {params:{args:[table]}});
+
 
 };
 

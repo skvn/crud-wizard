@@ -1,5 +1,7 @@
 <template>
     <h1 v-show="!model_loaded" ><i  class="fa fa-spinner fa-spin"></i></h1>
+
+
     <div :class="{ 'container-fluid in ': model_loaded }" class="container-fluid fade">
 
         <div class="row">
@@ -39,6 +41,7 @@
     import Vue from 'vue'
     import store from '../vuex/store'
     import Actions from '../vuex/actions'
+
     import { getModel, getConfig } from '../vuex/getters'
 
     var table = window.table;
@@ -48,10 +51,11 @@
         data(){
             return{
                table,
-               model_loaded:true,
+               model_loaded:false,
 
             }
         },
+
 
         store,
         vuex: {
@@ -68,7 +72,13 @@
 
         created () {
             this.fetchConfig(this.table);
-            this.fetchModel(this.table);
+            this.fetchModel(this.table)
+                    .then((response) =>  {
+                        this.$store.dispatch('SET_MODEL', response.json())
+                        this.model_loaded = true;
+                       }
+                    )
+                    .catch((error) => Promise.reject(error));
 
 
         },

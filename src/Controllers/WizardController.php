@@ -57,13 +57,13 @@ class WizardController extends Controller {
         $model = $this->wizard->getModelConfig($table, false, false);
         if (!$model)
         {
-            if (!empty($this->request->get('model'))) {
-
-                $mname = studly_case(trim($this->request->get('model')));
-                $proto = new CrudModelPrototype(['name' => $mname, 'table' => $table]);
+                $model_name = studly_case(trim($table));
+                $proto = new CrudModelPrototype($table, ['name' => $model_name]);
                 $proto->record();
-                return redirect()->route('wizard_model',[$table]);
-            }
+
+        } else {
+
+            $model_name = $model['name'];
         }
 
         $alert = $this->wizard->getCheckAlert($model);
@@ -72,11 +72,11 @@ class WizardController extends Controller {
             view()->share('alert', $alert);
         }
 
-        $modelObj = CrudModel::createInstance($model['name']);
+        //$modelObj = CrudModel::createInstance($model['name']);
         return view('crud-wizard::model', [
                 'table'=>$table,
-                'model'=>$model,
-                'modelObj'=>$modelObj,
+                'model'=>$model_name,
+          //      'modelObj'=>$modelObj,
             ]
         );
     }

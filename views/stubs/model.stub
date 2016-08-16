@@ -1,0 +1,8 @@
+<?php namespace [NAMESPACE];
+
+use Skvn\Crud\Models\CrudModel;
+use Skvn\Crud\Models\CrudModelCollectionBuilder;
+
+class [MODEL] extends CrudModel {
+
+}

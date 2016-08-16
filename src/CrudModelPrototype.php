@@ -2,10 +2,12 @@
 
 
 
+use Illuminate\Support\Facades\Config;
 use Skvn\Crud\Contracts\WizardableField;
 use Skvn\Crud\Exceptions\WizardException;
 use Skvn\Crud\Form\Field;
 use Skvn\Crud\Form\Form;
+use Skvn\Crud\Models\CrudModel;
 
 /**
  * Class CrudModelPrototype
@@ -72,12 +74,12 @@ class CrudModelPrototype
     private $add_fields = [];
 
     /**
-     * @var string Contains error if any
+     * @var array Contains errors if any
      */
-    public $error;
+    public $errors;
 
 
-    private $traites = [];
+    private $useTraits = [];
 
     private $configDefaults = [
         'acl' => "",
@@ -118,12 +120,21 @@ class CrudModelPrototype
         "filterable" => 0
     ];
 
+    private $traits = [];
+
     /**
      * CrudModelPrototype constructor.
      * @param $config_data
      */
     public function __construct($table, $config_data)
     {
+
+        $this->traits  = [
+            'tree' => Config::get('common_crud.tree_trait','\Skvn\Crud\Traits\ModelTreeTrait'),
+            'inline_img' =>Config::get('common_crud.inline_image_trait','Skvn\Crud\Traits\ModelInlineImgTrait'),
+            'attach' =>Config::get('common_crud.attach_trait','Skvn\Crud\Traits\ModelAttachedTrait'),
+            'history' => Config::get('common_crud.history_trait','Skvn\Crud\Traits\ModelTreeTrait')
+        ];
 
         $this->config_data = $config_data;
         $this->table = $table;
@@ -157,11 +168,18 @@ class CrudModelPrototype
         //$this->prepareConfigData();
 
         $this->recordConfig();
-        //$this->recordModels();
+        $this->recordModels();
         //$this->recordMigrations();
         //$this->migrate();
 
-        return ['success'=>true];
+        if (!count($this->errors)) {
+            return ['success' => true];
+        } else {
+            return [
+                'success' => false,
+                'errors' => $this->errors
+            ];
+        }
 
     }
 
@@ -171,6 +189,11 @@ class CrudModelPrototype
     private function processRelations()
     {
 
+
+        if (empty($this->config_data['fields']) || ! is_array($this->config_data['fields']))
+        {
+            return;
+        }
 
         foreach ($this->config_data['fields'] as $key=> $rel)
         {
@@ -253,7 +276,7 @@ class CrudModelPrototype
 
                 if (!empty($f['type']))
                 {
-                    $this->config_data['fields'][$k]['editable'] = 1;
+                    //$this->config_data['fields'][$k]['editable'] = 1;
 
                     //process field config by field
                     if ($control = Form::getControlByType($f['type']))
@@ -262,6 +285,14 @@ class CrudModelPrototype
                             $control->wizardCallbackFieldConfig($k, $f, $this);
                             $control->wizardCallbackModelConfig($k, $f, $this);
                         }
+                    }
+
+                    //traits
+                    if ($f['type'] == 'textarea'
+                        && !empty($f['editor_type'])
+                        && $f['editor_type'] == 'summernote') {
+
+                        $this->useTraits[] = 'inline_img';
                     }
 
                 }
@@ -306,8 +337,14 @@ class CrudModelPrototype
                         'order_column' => "tree_order"
                     ];
             }
+
+            $this->useTraits[] = 'tree';
+
         }
 
+        if (!empty($this->config_data['track_history'])) {
+            $this->useTraits[] = 'history';
+        }
 
         $this->clearDefaults();
         return $this->config_data;
@@ -323,14 +360,17 @@ class CrudModelPrototype
         }
 
         //fields
-        foreach ($this->config_data['fields'] as $k=>$f) {
-            foreach ($this->fieldDefaults as $dk => $dv) {
-                if (isset($f[$dk]) && $f[$dk] === $dv) {
-                    unset ($this->config_data['fields'][$k][$dk]);
+        if (!empty($this->config_data['fields']) && is_array($this->config_data['fields'])) {
+            foreach ($this->config_data['fields'] as $k => $f) {
+                foreach ($this->fieldDefaults as $dk => $dv) {
+                    if (isset($f[$dk]) && $f[$dk] === $dv) {
+                        unset ($this->config_data['fields'][$k][$dk]);
+                    }
                 }
             }
         }
 
+        //scopes
         if (!empty($this->config_data['scopes']) && is_array($this->config_data['scopes'])) {
             foreach ($this->config_data['scopes'] as $sk =>$scope) {
                 //list cols
@@ -480,28 +520,53 @@ class CrudModelPrototype
 
 
 //
-//    /**
-//     * Record Model files
-//     */
-//    protected  function  recordModels()
-//    {
-//        //record main model (ONLY ONCE)
-//        if (!file_exists($this->path.'/'.$this->config_data['name'].'.php'))
-//        {
-//            @mkdir($this->path);
-//            file_put_contents($this->path.'/'.$this->config_data['name'].'.php',
-//                $this->app['view']->make('crud-wizard::stubs/crud_model_class', ['model'=>$this->config_data])->render()
-//            );
-//        }
-//
-//        //record base model
-//        @mkdir($this->path.'/Crud');
-//        file_put_contents($this->path.'/Crud/'.$this->config_data['name'].'Base.php',
-//            $this->app['view']->make('crud-wizard::stubs/crud_base_model_class', ['model'=>$this->config_data])->render()
-//        );
-//
-//
-//    }//
+    /**
+     * Record Model files
+     */
+    protected  function  recordModels()
+    {
+        //record main model (ONLY ONCE)
+        if (!file_exists($this->path.'/'.$this->config_data['name'].'.php'))
+        {
+            @mkdir($this->path);
+            $stub = file_get_contents(__DIR__.'/../views/stubs/model.stub');
+            $stub = str_replace('[NAMESPACE]',$this->namespace, $stub);
+            $stub = str_replace('[MODEL]',$this->config_data['name'], $stub);
+
+            file_put_contents($this->path.'/'.$this->config_data['name'].'.php',$stub);
+
+        } else {
+
+
+            if (count($this->useTraits)) {
+                $insertTraits = [];
+                $model = CrudModel::createInstance($this->config_data['name']);
+                $reflection = new \ReflectionClass($model);
+                $traits = $reflection->getTraitNames();
+                foreach ($this->useTraits as $trait) {
+                    $trait = ltrim($this->traits[$trait],"\\");
+                    if (!in_array($trait, $traits)) {
+                        $insertTraits[] = "    use \\".$trait.";";
+                    }
+                }
+                if (count($insertTraits)) {
+                    $fileCts = file_get_contents($this->path.'/'.$this->config_data['name'].'.php');
+                    if (preg_match("#.*(class.+".$this->config_data['name'].".*\{)#siUm", $fileCts, $matches) && !empty($matches[1])) {
+
+                        $fileCts = str_replace($matches[1], $matches[1]."\n".implode("\n", $insertTraits), $fileCts);
+                        file_put_contents($this->path.'/'.$this->config_data['name'].'.php',$fileCts);
+
+                    } else {
+                        $this->errors[] = "Unable to record traits.<br>Probably the model file is corrupt.<br>Please check the model file and add the following traits manually:<br><br>".implode("<br>", $insertTraits);
+                    }
+               }
+            }
+
+        }
+
+
+
+    }//
 //
 //    /**
 //     * Record migrations
