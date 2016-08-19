@@ -93,7 +93,10 @@
                 if (id === this.id) {
                     this.show();
                     var $form = $('form', this.$el).first();
-                    window.setTimeout(function () {$form.bootstrapValidator();}, 500);
+                    window.setTimeout(function () {$form.bootstrapValidator().on('success.form.bv', function(e) {
+                        // Prevent submit form
+                        e.preventDefault();
+                    });}, 500);
 
                 }
             },

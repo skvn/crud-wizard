@@ -44,8 +44,16 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
     function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
     {
         $formats = $modelPrototype->wizard->getAvailableDateTimeFormats();
-        $fieldConfig['jsformat'] = $formats[$fieldConfig['format']]['js'];
-        $fieldConfig['format'] = $formats[$fieldConfig['format']]['php'];
-        $fieldConfig['db_type'] = $modelPrototype->column_types[$fieldKey];
+
+        foreach ($formats as $f) {
+            if ($f['php'] == $fieldConfig['format']) {
+                $fieldConfig['jsformat'] = $f['js'];
+                if (!empty($modelPrototype->column_types[$fieldKey])) {
+                    $fieldConfig['db_type'] = $modelPrototype->column_types[$fieldKey];
+                }
+            }
+        }
+
+
     }
 }

@@ -7,7 +7,9 @@ const default_model = {
     acl:'',
     title_field:'',
     track_history: '',
-    forms: []
+    forms: {},
+    fields: {},
+    scopes: {},
 };
 
 const state = {
@@ -19,8 +21,10 @@ const state = {
 
 const mutations = {
     SET_MODEL (state, model) {
+
+        //console.log(state.model);
         state.model = Object.assign({},default_model, model);
-        console.log(state.model);
+        //console.log(state.model);
 
     },
 

@@ -6,17 +6,36 @@
             <template v-if="!edit">Add new  field</template>
         </div>
         <div slot="modal-body">
-            <form id="field_form">
+            <form id="field_form" v-on:submit="save($event); return false;">
             <div class="card">
                 <span class="label label-primary pull-right">{{ field.type }}</span>
-                <span class="label label-warning pull-right">{{ field.key }}</span>
+                <template v-if="!clone">
+                    <span class="label label-warning pull-right">{{ field.key }}</span>
+                </template>
                 <br clear="all" />
                 <div class="row">
+                    <div class="col-md-12" v-if="clone">
+                    <div class="col-md-8">
+                    <div class="form-group">
+
+                     <label>Field key</label><br />
+
+                    <select class="form-control default_select" id="clone_key" style="display:inline; width:250px;" v-model="field.key" >
+                        <option value="">Choose existing database table field</option>
+                        <option v-for="f in config.table_columns | filterBy notUsedField"  v-bind:value="f">
+                            {{ f }}
+                        </option>
+                    </select>
+                    or add a new one <input type="text" style="display:inline; width:150px;" v-model="key_new" />
+                    </div>
+                    </div>
+                    </div>
+
                     <div class="col-md-12">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Title *</label>
-                                <input type="text"  class="form-control" name="title" :value="field.title"
+                                <input type="text"   class="form-control" name="title" :value="field.title"
                                        required placeholder="Title of the field" v-model="field.title" >
 
                         </div>
@@ -43,7 +62,7 @@
 
                         <div class="form-group"  v-if="showField('height')">
                         <label>Height</label>
-                            <input type="number" :value="field.height" step="1" name="height" style="width: 50px;" v-model="field.height">
+                            <input type="number"    :value="field.height" step="1" name="height" style="width: 50px;" v-model="field.height">
                         </div>
 
                         <div class="form-group"  v-if="showField('editor_type')">
@@ -76,15 +95,15 @@
                             <div class="row">
                                 <div class="col col-xs-4">
                                     <label>Min</label>
-                                        <input type="text" class="form-control" name="min" v-model="field.min"  >
+                                        <input    type="text" class="form-control" name="min" v-model="field.min"  >
                                 </div>
                                 <div class="col col-xs-4">
                                     <label>Max</label>
-                                        <input type="text" class="form-control" name="max"  v-model="field.max"  >
+                                        <input    type="text" class="form-control" name="max"  v-model="field.max"  >
                                 </div>
                                 <div class="col col-xs-4">
                                     <label>Step</label>
-                                    <input type="text" class="form-control" name="step" v-model="field.step" >
+                                    <input    type="text" class="form-control" name="step" v-model="field.step" >
                                 </div>
                             </div>
                         </div>
@@ -107,13 +126,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                         <label> Hint</label>
-                        <input type="text" class="form-control"
+                        <input type="text" class="form-control"   
                                name="hint" :value="field.hint" placeholder="a little hint for the user"
                                v-model="field.hint" >
                         </div>
                         <div class="form-group">
                         <label> Extra attributes</label>
-                        <input type="text" class="form-control" name="extra" :value="field.extra" placeholder="disabled, readonly. etc"
+                        <input     type="text" class="form-control" name="extra" :value="field.extra" placeholder="disabled, readonly. etc"
                                v-model="field.extra"
                         >
                         </div>
@@ -180,6 +199,8 @@
                     key: ''
                 },
                 edit: false,
+                clone:false,
+                key_new:'',
 
                 field_config: {}
 
@@ -198,8 +219,16 @@
 
             'field::edit'(key) {
                 this.edit = true;
-                this.field = this.model.fields[key];
+                this.field = JSON.parse(JSON.stringify(this.model.fields[key]));
                 this.field.key = key;
+                this.initFieldConfig();
+            },
+
+            'field::clone'(key) {
+                this.edit = false;
+                this.clone  = true;
+                this.field = JSON.parse(JSON.stringify(this.model.fields[key]));
+                this.field.key = '';
                 this.initFieldConfig();
             },
 
@@ -216,10 +245,29 @@
                 this.edit = false;
             },
 
-            save() {
+
+            save(e) {
+                console.log(e);
+                if (e) {
+                    e.preventDefault();
+                }
+
+                if (this.clone && this.key_new != '') {
+                    this.field.key = this.key_new
+                }
+
+                if (this.field.key == '') {
+                    swal('Please choose field key', '', 'error');
+                    $('#clone_key').focus();
+                    return false;
+
+                }
+
                 Actions.validateForm($('form#field_form'), () => {
                     delete this.field.is_for_virtual;
-                    Vue.set(this.model.fields,this.field.key,Object.assign({},this.field));
+                    var key = this.field.key;
+                    delete this.field.key;
+                    Vue.set(this.model.fields,key,Object.assign({},this.field));
                     this.initEmptyField();
                     this.$broadcast('hide::modal', 'field_modal');
                 });
@@ -227,8 +275,7 @@
             },
 
             initFieldConfig(assign_defaults) {
-                alert(this.field.type);
-                console.log(this.config.fields_config);
+
                 this.$set('field_config',this.config.fields_config[this.field.type]);
                 if (assign_defaults) {
                     Object.assign(this.field, this.field_config.defaults);
@@ -250,11 +297,35 @@
                 }
 
                 return false;
-            }
+            },
+
+            notUsedField(row) {
+
+                if (typeof this.model.fields[row] == 'undefined')
+                {
+                    return true;
+                }
+
+                return false;
+            },
 
         },
 
         watch: {
+
+            'key_new': function (val, oldVal) {
+                if (val != '')
+                {
+                    this.field.key  = "";
+                }
+            },
+
+            'field.key': function (val, oldVal) {
+                if (val != '')
+                {
+                    this.key_new = "";
+                }
+            },
 
         }
 

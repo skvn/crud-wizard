@@ -15,10 +15,10 @@
             <td>{{ key }}</td>
             <td>{{ f.type }}</td>
             <td>{{ f.title }}</td>
-            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="editField(key)"><i
-                    class="fa fa-edit"> </i></a>
-                &nbsp;&nbsp;&nbsp;
-                <a class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
+            <td>
+                <a title="Clone this field" class="text-success" style="font-size: 20px;" href="#" @click.prevent="cloneField(key)"><i
+                        class="fa fa-clone"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Edit field" class="text-info" style="font-size: 20px;" href="#" @click.prevent="editField(key)"><i
+                    class="fa fa-edit"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Delete field" class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
                    style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
             </td>
         </tr>
@@ -84,6 +84,12 @@ import { getConfig, getModel } from '../vuex/getters'
                 this.new_field_key_new = '';
             },
 
+            cloneField(key) {
+
+                this.$broadcast('field::clone', key);
+                this.$broadcast('show::modal', 'field_modal');
+
+            },
 
             editField(key) {
                 this.$broadcast('field::edit', key);

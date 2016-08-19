@@ -1,6 +1,7 @@
 <?php namespace Skvn\CrudWizard;
 
 use Illuminate\Http\Request;
+use Skvn\Crud\Exceptions\Exception;
 use Skvn\Crud\Form\Form;
 use Skvn\Crud\Exceptions\WizardException;
 use Skvn\Crud\Contracts\WizardableField;
@@ -10,7 +11,7 @@ class Migrator
 
     public $error;
 
-    private $request, $app;
+    private $request, $app, $existing;
 
 
 
@@ -20,6 +21,16 @@ class Migrator
         $this->request = $request;
         $this->app = app();
         $this->app['view']->addNamespace('crud_wizard', __DIR__ . '/../../stubs');
+        $this->existing =  (new Wizard())->getTables();
+    }
+
+    private function checkTableExists($table) {
+
+        if (in_array($table,$this->existing)) {
+            return true;
+        }
+
+        return false;
     }
 
     public  function createTable($table=null)
@@ -32,16 +43,9 @@ class Migrator
             throw new WizardException('No table name specified');
         }
 
-        
-
-        $existing = (new Wizard())->getTables();
-
-        if (in_array($table,$existing))
-        {
-            $this->error = 'Table '.$table.' already exists';
 
             
-        } else {
+         if (!$this->checkTableExists($table)) {
             
             $migration = [
                 'table_name' => $table,
@@ -64,33 +68,55 @@ class Migrator
     
     public  function createPivotTable($data)
     {
-        $data['class']  =   "Create".studly_case($data['table_name'])."PivotTable";
-        $path = base_path() . '/database/migrations/' . date('Y_m_d_His') .
-            '_create_' . $data['table_name'] . '_pivot_table.php';
 
-        file_put_contents($path,
-            $this->app['view']->make('crud_wizard::migrations/pivot', ['pivot'=>$data])->render()
-        );
+        if (!$this->checkTableExists($data['table_name'])) {
+
+            $data['class'] = "Create" . studly_case($data['table_name']) . "PivotTable";
+            $path = base_path() . '/database/migrations/' . date('Y_m_d_His') .
+                '_create_' . $data['table_name'] . '_pivot_table.php';
+
+            $stub = file_get_contents(__DIR__ . '/../views/stubs/migrations/pivot.stub');
+            foreach ($data as $k => $v) {
+                $stub = str_replace('[' . strtoupper($k) . ']', $v, $stub);
+            }
+            file_put_contents($path, $stub);
+
+            return true;
+        }
+
+        return false;
     }
 
     public  function  appendColumns($table, $cols)
     {
-        $migration = [
-            'table_name' => $table,
-            'class'  =>   "Alter".studly_case($table)."Table".md5($table.implode(',',$cols)),
-            'columns' => $cols
-        ];
 
-        if ($this->checkMigrationName($migration['class'])) {
+        $migration_up = '';
+        $migration_down = '';
+        if (is_array($cols)) {
 
+            $class = "Alter".studly_case($table)."Table".md5($table.implode(',',array_keys($cols)));
+            if ($this->checkMigrationName($class)) {
+                $stub = file_get_contents(__DIR__ . '/../views/stubs/migrations/alter_table.stub');
+                $stub = str_replace('[CLASS]', $class, $stub);
+                $stub = str_replace('[TABLE_NAME]', $table, $stub);
 
-            $path = base_path() . '/database/migrations/' . date('Y_m_d_His') .
-                '_' . snake_case($migration['class']) . '.php';
+                foreach ($cols as $col_name => $col_type) {
+                    $migration_up .= "\$table->" . $col_type . "('" . $col_name . "');\n            ";
+                    $migration_down .= "\$table->dropColumn('" . $col_name . "');\n            ";
+                }
 
-         return  file_put_contents($path,
-                $this->app['view']->make('crud_wizard::migrations/alter_table', compact('migration'))->render()
-            );
+                $stub = str_replace('[MIGRATION_UP]', $migration_up, $stub);
+                $stub = str_replace('[MIGRATION_DOWN]', $migration_down, $stub);
+
+                $path = base_path() . '/database/migrations/' . date('Y_m_d_His') .
+                    '_' . snake_case($class) . '.php';
+
+                file_put_contents($path,$stub);
+
+                return true;
+            }
         }
+
 
         return false;
     }
@@ -119,24 +145,29 @@ class Migrator
     public  function migrate()
     {
 
-        if (empty($this->error) && $this->isMigrateAllowed()) {
-            return \Artisan::call("migrate", ['--force' => true, '--quiet' => true]);
-        }
-
-        return false;
-    }//
-
-    private function isMigrateAllowed()
-    {
-        if ($this->app['config']['crud_common.auto_migrate_allowed'])
-        {
-            return true;
-
-        } else {
-            $this->error = "Running automatic migrations is prohibited by your configuration file. <br>Please, <b>run php artisan migrate</b> from the command line";
+        //if (empty($this->error) && $this->isMigrateAllowed()) {
+        try {
+            \Artisan::call("migrate", ['--force' => true, '--quiet' => true]);
+        } catch (\Exception $e) {
             return false;
         }
-    }
+        //}
+
+        return true;
+
+    }//
+
+//    private function isMigrateAllowed()
+//    {
+//        if ($this->app['config']['crud_common.auto_migrate_allowed'])
+//        {
+//            return true;
+//
+//        } else {
+//            $this->error = "Running automatic migrations is prohibited by your configuration file. <br>Please, <b>run php artisan migrate</b> from the command line";
+//            return false;
+//        }
+//    }
 
 
 

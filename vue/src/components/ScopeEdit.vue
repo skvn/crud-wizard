@@ -6,7 +6,7 @@
             <template v-if="!edit">Add new scope "{{ scopeKey }}"</template>
         </div>
         <div slot="modal-body">
-            <form id="scope_form">
+            <form id="scope_form" v-on:submit.prevent="save()">
             <div class="card">
                 <div style="padding:10px;">
                         <!--<div class="row">-->
@@ -227,6 +227,7 @@
                 newSortDir: 'asc',
                 newScope: {
                     title : "",
+                    form: "",
                     multiselect: true,
 //                    list:[],
 //                    list_actions:[],
@@ -402,7 +403,15 @@
 
                 Actions.validateForm($('form#scope_form'), () => {
 
-                    Vue.set(this.model.scopes,this.scopeKey,this.scope);
+                    if (!Object.keys(this.model.scopes).length) {
+                        let scopes = {};
+                        scopes[this.scopeKey] = JSON.parse(JSON.stringify(this.scope));
+                        this.$set('model.scopes',scopes);
+                    } else {
+                        Vue.set(this.model.scopes,this.scopeKey,JSON.parse(JSON.stringify(this.scope)));
+                    }
+                    
+
                     this.hide();
 
                 });

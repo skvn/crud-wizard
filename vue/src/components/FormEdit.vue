@@ -14,7 +14,7 @@
                         <div class="col-md-5">
                             <label>Add tab</label>
                             <div class="input-group">
-                            <input type="text"  class="form-control"  v-model="newTabTitle" placeholder="Tab title" >
+                            <input type="text"  class="form-control" @keyup.enter.prevent="addTab()" v-model="newTabTitle" placeholder="Tab title" >
                                 <span class="input-group-btn">
                                 <button class=" btn btn-primary" @click.prevent="addTab()">Ok</button>
                                 </span>
@@ -306,7 +306,16 @@
                         this.fields.forEach(function (f, i) {
                            form_arr.push(f.key);
                         });
-                        Vue.set(this.model.forms,this.formKey,form_arr);
+
+                        if (!Object.keys(this.model.forms).length) {
+                            let forms = {};
+                            forms[this.formKey] = form_arr;
+                            this.$set('model.forms',forms);
+                        } else {
+                            Vue.set(this.model.forms, this.formKey, form_arr);
+                        }
+
+                        //Vue.set(this.model.forms,this.formKey,form_arr);
                     } else {
 
 
@@ -338,8 +347,14 @@
                             }
                         });
 
-                        Vue.set(this.model.forms,this.formKey,form_obj);
-                        console.log(form_obj);
+                        if (!Object.keys(this.model.forms).length) {
+                            let forms = {};
+                            forms[this.formKey] = form_obj;
+                            this.$set('model.forms',forms);
+                        } else {
+                            Vue.set(this.model.forms, this.formKey, form_obj);
+                        }
+                        //console.log(form_obj);
 
 
                     }

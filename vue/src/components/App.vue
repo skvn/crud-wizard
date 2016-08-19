@@ -137,13 +137,59 @@
                     }
                 }
 
-                var page_url = Actions.apiUrl +'saveModel'
-                this.$http.post(page_url,{args:[this.table,JSON.stringify(this.model)]}).then((resp)=>{
-                    var res = resp.json();
-                    if (typeof res.success != 'undefined' &&  res.success) {
-                        swal('Ohh yeah','success');
-                    }
-                });
+                swal(
+                        {
+                            title: "Are you sure?",
+                            text: "Please check everything!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, save it!",
+                            showLoaderOnConfirm:true,
+
+                        })
+                        .then(() => {
+                            var page_url = Actions.apiUrl +'saveModel'
+                            this.$http.post(page_url,{args:[this.table,JSON.stringify(this.model)]}).then((resp)=>{
+                                var res = resp.json();
+                                if (res && typeof res.success != 'undefined' &&  res.success) {
+                                    if (res.migrations) {
+                                        swal(
+                                                {
+                                                    title: "Migrations created",
+                                                    text: "Some migrations were created. You can run them right now or review and run `artisan migrate` later",
+                                                    type: "warning",
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: "#DD6B55",
+                                                    confirmButtonText: "Run them!",
+                                                    cancelButtonText: "Forget it"
+                                                })
+                                                .then(() => {
+
+                                                    var page_url = Actions.apiUrl +'runMigrations'
+                                                    this.$http.post(page_url,{}).then((resp)=>{
+                                                        var res = resp.json();
+                                                        if (res && typeof res.success != 'undefined' &&  res.success) {
+                                                            swal('Ohh yeah','', 'success');
+                                                        } else {
+                                                            swal('Ohh no','','error');
+                                                        }
+                                                    });
+
+
+                                                }, () => {});
+
+                                    } else {
+                                        swal('Ohh yeah','', 'success');
+                                    }
+                                } else {
+                                    swal('Ohh no','','error');
+                                }
+                            });
+
+                        }, () => {});
+
+
             },
 
             deleteField(key) {

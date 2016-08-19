@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class [CLASS] extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        if (!Schema::hasTable('[TABLE_NAME]')) {
+            Schema::create('[TABLE_NAME]', function (Blueprint $table) {
+            $table->integer('[SELF_KEY]')->unsigned()->index();
+            $table->integer('[FOREIGN_KEY]')->unsigned()->index();
+            $table->primary(['[SELF_KEY]', '[FOREIGN_KEY]']);
+            });
+        }
+
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('[TABLE_NAME]');
+    }
+}

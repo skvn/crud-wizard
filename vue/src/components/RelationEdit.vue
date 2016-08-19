@@ -6,7 +6,7 @@
             <template v-if="!edit">Add new  relation</template>
         </div>
         <div slot="modal-body">
-            <form id="relation_form">
+            <form id="relation_form" v-on:submit.prevent>
             <div class="card">
                 <span class="label label-primary pull-right">{{ relation.relation }}</span>
                 <br clear="all" />

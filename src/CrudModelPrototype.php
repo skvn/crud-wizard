@@ -5,8 +5,7 @@
 use Illuminate\Support\Facades\Config;
 use Skvn\Crud\Contracts\WizardableField;
 use Skvn\Crud\Exceptions\WizardException;
-use Skvn\Crud\Form\Field;
-use Skvn\Crud\Form\Form;
+
 use Skvn\Crud\Models\CrudModel;
 
 /**
@@ -89,6 +88,7 @@ class CrudModelPrototype
 
     private $fieldDefaults = [
         "hint_default" => "",
+        "hint" => "",
         "required" => "0",
         "extra" => "",
         "find" => "",
@@ -130,10 +130,10 @@ class CrudModelPrototype
     {
 
         $this->traits  = [
-            'tree' => Config::get('common_crud.tree_trait','\Skvn\Crud\Traits\ModelTreeTrait'),
-            'inline_img' =>Config::get('common_crud.inline_image_trait','Skvn\Crud\Traits\ModelInlineImgTrait'),
-            'attach' =>Config::get('common_crud.attach_trait','Skvn\Crud\Traits\ModelAttachedTrait'),
-            'history' => Config::get('common_crud.history_trait','Skvn\Crud\Traits\ModelTreeTrait')
+            'tree' => Config::get('crud_common.tree_trait','\Skvn\Crud\Traits\ModelTreeTrait'),
+            'inline_img' =>Config::get('crud_common.inline_image_trait','Skvn\Crud\Traits\ModelInlineImgTrait'),
+            'attach' =>Config::get('crud_common.attach_trait','Skvn\Crud\Traits\ModelAttachedTrait'),
+            'history' => Config::get('crud_common.history_trait','Skvn\Crud\Traits\ModelHistoryTrackTrait')
         ];
 
         $this->config_data = $config_data;
@@ -169,11 +169,14 @@ class CrudModelPrototype
 
         $this->recordConfig();
         $this->recordModels();
-        //$this->recordMigrations();
+        $this->recordMigrations();
         //$this->migrate();
 
         if (!count($this->errors)) {
-            return ['success' => true];
+            return [
+                'success' => true,
+                'migrations' => $this->migrations_created
+            ];
         } else {
             return [
                 'success' => false,
@@ -276,10 +279,9 @@ class CrudModelPrototype
 
                 if (!empty($f['type']))
                 {
-                    //$this->config_data['fields'][$k]['editable'] = 1;
 
                     //process field config by field
-                    if ($control = Form::getControlByType($f['type']))
+                    if ($control = Wizard::getAvailControl($f['type']) )
                     {
                         if ($control instanceof \Skvn\CrudWizard\Contracts\WizardableField) {
                             $control->wizardCallbackFieldConfig($k, $f, $this);
@@ -568,52 +570,74 @@ class CrudModelPrototype
 
     }//
 //
-//    /**
-//     * Record migrations
-//     */
-//    protected function recordMigrations()
-//    {
+    /**
+     * Record migrations
+     */
+    protected function recordMigrations()
+    {
+
+        $this->recordPivotMigrations();
+        $this->recordAddFieldsMigrations();
+
+    }//
+
+    private function recordPivotMigrations()
+    {
+        if (!empty($this->migrations_data['pivot']) && is_array($this->migrations_data['pivot']))
+        {
+            $migrator = new Migrator();
+            foreach ($this->migrations_data['pivot'] as $p)
+            {
+
+                if ($migrator->createPivotTable($p)) {
+                    $this->migrations_created = true;
+                }
+
+
+            }
+        }
+
+    }
+
+
 //
-//        $this->recordPivotMigrations();
-//        $this->recordAddFieldsMigrations();
-//
-//
-//    }//
-//
-//    /**
-//     *  Record mirations for add fields
-//     */
-//    private function recordAddFieldsMigrations()
-//    {
-//        if (count($this->add_fields))
-//        {
-//
-//            $migrator = new Migrator();
-//            $columns = [];
-//
-//            foreach ($this->add_fields as $fname=>$fdesc)
-//            {
-//                if (!empty($fdesc['type'])) {
-//                    if ($control = Form::getControlByType($fdesc['type'])) {
-//                        if ($control instanceof WizardableField) {
-//                            $dbtype = $migrator->getColumDbTypeByEditType($fdesc['type']);
-//                            if (!empty($dbtype)) {
-//                                $columns[$fname] = $dbtype;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//
-//            if (count($columns)) {
-//                if ($migrator->appendColumns($this->table, $columns)) {
-//                    $this->migrations_created = true;
-//                }
-//            }
-//
-//        }
-//    }//
+    /**
+     *  Record mirations for add fields
+     */
+    private function recordAddFieldsMigrations()
+    {
+
+        if (count($this->add_fields))
+        {
+
+            $migrator = new Migrator();
+            $columns = [];
+
+            foreach ($this->add_fields as $fname=>$fdesc)
+            {
+                if (!empty($fdesc['type'])) {
+                    if ($control =  Wizard::getAvailControl($fdesc['type'])) {
+
+                        if ($control instanceof \Skvn\CrudWizard\Contracts\WizardableField) {
+                            if (!$control->wizardIsForRelationOnly() && !$control->wizardIsForVirtualOnly()) {
+                                $dbtype = $control->wizardDbType();
+                                if (!empty($dbtype)) {
+                                    $columns[$fname] = $dbtype;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (count($columns)) {
+                if ($migrator->appendColumns($this->table, $columns)) {
+                    $this->migrations_created = true;
+                }
+            }
+
+        }
+    }//
 //
 //
 //    /**
@@ -632,21 +656,7 @@ class CrudModelPrototype
 //    }
 //
 //
-//    private function recordPivotMigrations()
-//    {
-//        if (!empty($this->migrations_data['pivot']) && is_array($this->migrations_data['pivot']))
-//        {
-//            $migrator = new Migrator();
-//            foreach ($this->migrations_data['pivot'] as $p)
-//            {
-//
-//                $this->migrations_created = true;
-//                $migrator->createPivotTable($p);
-//
-//            }
-//        }
-//
-//    }
+
 
 
 }

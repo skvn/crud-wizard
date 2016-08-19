@@ -703,16 +703,6 @@ class Wizard
     }//
 
 
-    /**
-     * Get control instance by type alias
-     *
-     * @param $type
-     * @return null|\Skvn\Crud\Contracts\FormControl
-     */
-    public function getControlByType($type)
-    {
-        return Form::getControlByType($type);
-    }
 
     /**
      * Get select options for on_delete select
@@ -907,6 +897,15 @@ class Wizard
         $data = json_decode($json, 1);
         $proto = new CrudModelPrototype($table, $data);
         return $proto->record();
+
+    }
+
+    public function runMigrations() {
+
+        $migrator = new Migrator();
+        return [
+            'success' => $migrator->migrate()
+        ];
 
     }
 
