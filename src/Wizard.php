@@ -65,6 +65,12 @@ class Wizard
      */
     public $model_dir_path = '';
 
+    /**
+     * @var array
+     */
+
+    public $table_models;
+
     /*
      * @var array array of tables not showing in wizard model list
      */
@@ -338,17 +344,7 @@ class Wizard
             if (file_exists(config_path('crud/'.$table_name.'.php')))
             {
                 $this->model_configs[$table_name] = $this->app['config']->get('crud.'.$table_name);
-                //$this->model_configs[$table_name]['filters'] = [];
-                if (!empty($this->model_configs[$table_name]['list']))
-                {
-//                    foreach ($this->model_configs[$table_name]['list'] as $alias => $list)
-//                    {
-//                        if (!empty($list['filter']))
-//                        {
-//                            $this->model_configs[$table_name]['filters'][$alias] = $list['filter'];
-//                        }
-//                    }
-                }
+
             } else {
                 $this->model_configs[$table_name] = false;
             }
@@ -393,13 +389,25 @@ class Wizard
         if (!$this->crud_configs)
         {
             $this->crud_configs = [];
+            $this->table_models = [];
+
             $files =  \File::files(config_path('crud'));
             foreach ($files as $file)
             {
-                $cfg = include ($file);
                 $table = str_replace(['crud_', '.php'],'', basename($file));
-                $cfg['table'] = $table;
-                $this->crud_configs[$cfg['name']] = $cfg;
+                $cfg = $this->app['config']->get('crud.'.$table);
+                if ($cfg && is_array($cfg)) {
+                    $cfg['table'] = $table;
+                    $this->crud_configs[$cfg['name']] = $cfg;
+                    $this->table_models[$table] = $cfg['name'];
+                }
+
+//                $this->crud_configs[$cfg['name']] = $cfg;
+
+//                $cfg = include ($file);
+//                $table = str_replace(['crud_', '.php'],'', basename($file));
+//                $cfg['table'] = $table;
+//                $this->crud_configs[$cfg['name']] = $cfg;
             }
         }
 
@@ -851,6 +859,32 @@ class Wizard
 
 
     }
+
+
+    public function getWizardModelsConfig() {
+
+        $tables = $this->getTables(true);
+        $pivotTables = $this->getAllPivotTables();
+        $allConfigs = $this->getCrudConfigs();
+        $tableModels  =  [];
+
+        foreach ($tables as $t) {
+            if (!in_array($t,$pivotTables)) {
+                if (isset($this->table_models[$t])) {
+                    $tableModels[$t] = $this->table_models[$t];
+                } else {
+                    $tableModels[$t]  = '';
+                }
+            }
+
+        }
+
+        return [
+            'tables' => $tableModels
+        ];
+
+
+    }//
 
 
     public function getWizardConfig($table)

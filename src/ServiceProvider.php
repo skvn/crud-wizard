@@ -26,6 +26,9 @@ class ServiceProvider extends LServiceProvider {
         // Routing
         include __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
 
+        //HELPERS
+        include __DIR__ . DIRECTORY_SEPARATOR . 'helpers.php';
+
     }
 
     protected function registerControls()

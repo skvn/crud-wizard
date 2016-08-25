@@ -1,0 +1,86 @@
+<main class="mdl-layout__content mdl-color--grey-100 page" style="">
+    <section>
+
+        <div class="mdl-color--cyan ml-header relative clear">
+            <div class="p-20">
+                <h3 class="mdl-color-text--white m-t-20 m-b-5">User management</h3>
+                <h4 class="mdl-color-text--cyan-100 m-b-20 no-m-t w100">Manage all the users on your SAAS platform</h4>
+            </div>
+        </div>
+
+        <div class="mdl-grid mdl-grid--no-spacing">
+
+            <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-tablet mdl-cell--12-col-phone mdl-color--grey-100">
+                <div class="p-40 p-r-20 p-20--small">
+                    <div class=" mdl-color-text--blue-grey-400">
+                        <h3><i class="material-icons">list</i> Tables and Models listing</i></h3>
+                        <p>Change the data from the user in the form and push save</p>
+                        <div class="m-t-30">
+                            <ul class="list-bordered">
+                                <li><a href="">
+                                    <i class="material-icons m-r-5 f11">save</i>
+                                    Save changes
+                                </a></li>
+                                <li><a href="">
+                                    <i class="material-icons m-r-5 f11">mail</i>
+                                    Email new password
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdl-cell mdl-cell--9-col  mdl-cell--12-col-tablet mdl-cell--12-col-phone no-p-l">
+                <div class="p-20 ml-card-holder ml-card-holder-first">
+                    <div class="mdl-card mdl-shadow--1dp">
+                        <div class="p-30">
+                            <table class="mdl-data-table mdl-js-data-table	" style="width:100%" v-if="modelsLoaded">
+                                <thead>
+                                <tr>
+                                    <th class="mdl-data-table__cell--non-numeric" style="width:40%">Table</th>
+                                    <th class="mdl-data-table__cell--non-numeric" style="width:40%">Model name</th>
+                                    <th >Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(table, model) in models.tables">
+                                    <td class="mdl-data-table__cell--non-numeric" > {{ table }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric" >
+
+                                        <mdl-chip v-if="model">
+                                            {{ model }}
+                                        </mdl-chip>
+                                        <a  v-else>
+                                            <mdl-button v-mdl-ripple-effect icon accent colored fab>
+                                                <i class="material-icons">add</i>
+                                            </mdl-button>
+                                        </a>
+
+                                    </td>
+                                    <td >
+                                        <a  v-link="{ name: 'model_general', params: { table: table }}"   v-if="model" >
+                                            <mdl-button v-mdl-ripple-effect icon primary colored fab>
+                                                <i class="material-icons">edit</i>
+                                            </mdl-button>
+                                        </a>
+
+
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div v-else>
+                                <mdl-progress indeterminate></mdl-progress>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+</main>
+<!--<mdl-button @click="saveModel()" colored primary v-mdl-ripple-effect><i class="material-icons">save</i> Save model</mdl-button>-->

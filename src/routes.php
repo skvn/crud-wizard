@@ -12,7 +12,7 @@ if ($domain)
     $adm_route_params['domain'] = $domain;
 }
 
-Route::group($adm_route_params, function() {
+Route::group([ 'namespace' => 'Skvn\CrudWizard\Controllers'], function() {
 
 
     Route::post('crud_setup/migration/create',                      array('as'=>'wizard_migrate_create',        'uses' => 'WizardController@migrationCreate'));

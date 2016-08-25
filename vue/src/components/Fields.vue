@@ -16,10 +16,15 @@
             <td>{{ f.type }}</td>
             <td>{{ f.title }}</td>
             <td>
-                <a title="Clone this field" class="text-success" style="font-size: 20px;" href="#" @click.prevent="cloneField(key)"><i
-                        class="fa fa-clone"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Edit field" class="text-info" style="font-size: 20px;" href="#" @click.prevent="editField(key)"><i
-                    class="fa fa-edit"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Delete field" class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
-                   style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
+                <a title="Clone this field" class="text-success" style="font-size: 20px;" href="#"
+                   @click.prevent="cloneField(key)"><i
+                        class="fa fa-clone"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Edit field" class="text-info"
+                                                                          style="font-size: 20px;" href="#"
+                                                                          @click.prevent="editField(key)"><i
+                    class="fa fa-edit"> </i></a>&nbsp;&nbsp;&nbsp;<a title="Delete field" class="text-danger" href="#"
+                                                                     @click.prevent="this.$dispatch('delete_field',key)"
+                                                                     style="font-size: 20px;"><i
+                    class="fa fa-trash-o"> </i></a>
             </td>
         </tr>
     </table>

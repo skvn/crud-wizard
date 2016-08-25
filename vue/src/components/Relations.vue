@@ -56,7 +56,7 @@ import AddRelationBtn from './AddRelationBtn.vue'
 
             addRelation() {
                 if (this.new_relation_type == '') {
-                    swal('Choose relation type','','warning');
+                    swal('Choose relation type', '', 'warning');
                     return false;
                 }
                 this.$broadcast('relation::new', this.new_relation_type);

@@ -42,11 +42,11 @@ class WizardController extends Controller {
     function index()
     {
 
-        if ($this->request->isMethod('post'))
-        {
-             return $this->createModels();
-        }
-        return view('crud-wizard::index', ['wizard'=>$this->wizard]);
+//        if ($this->request->isMethod('post'))
+//        {
+//             return $this->createModels();
+//        }
+        return view('crud-wizard::new_page', ['wizard'=>$this->wizard]);
     }
 
 
@@ -121,7 +121,9 @@ class WizardController extends Controller {
 
     function getWizardMethod($method)
     {
-        return $this->wizard->$method(...\Request::get('args',[]));
+
+        return response($this->wizard->$method(...\Request::get('args',[])))
+            ->header('Access-Control-Allow-Origin', 'http://localhost:8080');
     }
 //
 //    function getFieldRowTpl($field_name)

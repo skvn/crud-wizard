@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html lang="en-us" class="ie9"><![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en-us">
+<!--<![endif]-->
+<head>
+    <title>{{ PAGE_TITLE }} / {{ config.app_title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ 'css/material.css'|asset(0,'crud-wizard') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {#<link href="{{ 'css/aa.css'|asset(0,'crud-wizard') }}" rel="stylesheet">#}
+
+
+    {% block head %}{% endblock %}
+</head>
+{%  if session('error') %}
+        {{ session('error')|raw }}
+{% endif %}
+
+<body>
+<div id="app">
+    <app></app>
+</div>
+{#<script src="{{ 'js/jquery.min.js'|asset(0,'crud-wizard') }}"></script>#}
+<script src="{{ 'js/material.js'|asset(0,'crud-wizard') }}"></script>
+<script src="{{ 'js/wizard_build.js'|asset(0,'crud-wizard') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+    <model-edit>
+
+        <dform  :model.sync="model" :structure="structure" v-if="configLoaded"></dform>
+
+
+        <!--<div class="input-field col s6">-->
+            <!--<select name="acl"   v-model="model.acl">-->
+                <!--<option value="">Allowed to all</option>-->
+                <!--<option v-for="(key, name) in config.acls" v-bind:value="key">-->
+                    <!--{{ name }}-->
+                <!--</option>-->
+            <!--</select>-->
+            <!--<label>Acl</label>-->
+        <!--</div>-->
+
+        <!--<div class="input-field col s6">-->
+            <!--<select   v-model="model.title_field" >-->
+            <!--<option value="">Choose database table field</option>-->
+            <!--<option v-for="col in config.table_columns" v-bind:value="col">-->
+            <!--{{ col }}-->
+            <!--</option>-->
+            <!--</select>-->
+            <!--<label>Title field</label>-->
+        <!--</div>-->
+
+        <!--<div class="input-field col s6">-->
+            <!--<select name="track_history" id="track_history"-->
+            <!--v-model="model.track_history">-->
+            <!--<option v-for="(value, text) in config.track_history_options" v-bind:value="value">-->
+            <!--{{ text }}-->
+            <!--</option>-->
+            <!--</select>-->
+            <!--<label >Audit trail. Track model changes</label>-->
+        <!--</div>-->
+
+        <!--</select>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label for="ent_name_r">(Russian only) Model entity name (Родительный-->
+        <!--падеж)</label>-->
+        <!--<input type="text" class="form-control" id="ent_name_r" name="ent_name_r"-->
+        <!--v-model="model.ent_name_r"/>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label for="ent_name_v">(Russian only) Model entity name (Винительный-->
+        <!--падеж)</label>-->
+        <!--<input type="text" class="form-control" id="ent_name_v" name="ent_name_v"-->
+        <!--v-model="model.ent_name_v"/>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<label for="dialog_width">Modal dialog width (optional)</label>-->
+        <!--<input type="text" class="form-control" id="dialog_width"-->
+        <!--name="dialog_width" v-model="model.dialog_width"/>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+    </model-edit>

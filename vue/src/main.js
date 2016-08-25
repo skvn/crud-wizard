@@ -3,82 +3,92 @@ import Resource from 'vue-resource'
 import Router from 'vue-router'
 import Vuex from 'vuex'
 import Sortable from 'vue-sortable'
+import VueMdl from 'vue-mdl'
 
 import swal from 'sweetalert2'
 
 import App from './components/App.vue'
-import General from './components/General.vue'
+import General from './components/ModelGeneral'
 import Relations from './components/Relations.vue'
 import Fields from './components/Fields.vue'
 import Forms from './components/Forms.vue'
-import Scopes  from './components/Scopes.vue'
-
+import Scopes from './components/Scopes.vue'
+import Index from './components/Index'
 
 import store from './vuex/store'
 
-
-Vue.use(Resource);
-Vue.use(Router);
-Vue.use(Vuex);
-Vue.use(Sortable);
-
+Vue.config.devtools = true
+Vue.use(Resource)
+Vue.use(Router)
+Vue.use(Vuex)
+Vue.use(Sortable)
+Vue.use(VueMdl)
 
 export var router = new Router()
 
 router.map({
-    '/general': {
-        component: General
 
-    },
+  '/index': {
+    component: Index
 
-    '/relations': {
-        component: Relations
-    },
+  },
 
-    '/fields': {
-        component: Fields
-    },
+  '/general/:table': {
+    name: 'model_general',
+    component: General
+  },
 
-    '/forms': {
-        component: Forms
-    },
+  '/relations/:table': {
+    name: 'model_relations',
+    component: Relations
+  },
 
-    '/scopes': {
-        component: Scopes
-    },
+  '/fields/:table': {
+    name: 'model_fields',
+    component: Fields
+  },
+
+  '/forms/:table': {
+    name: 'model_forms',
+    component: Forms
+  },
+
+  '/scopes/:table': {
+    name: 'model_scopes',
+    component: Scopes
+  }
 
 })
 
 router.redirect({
-    '*': '/general'
+  '*': '/index'
 })
 
-router.beforeEach(function (transition) {
+// router.beforeEach(function (transition) {
+//
+//     // var form = $('form.validate').first();
+//     // if (form.length) {
+//     //     var bootstrapValidator = form.data('bootstrapValidator');
+//     //     if (bootstrapValidator ) {
+//     //         bootstrapValidator.validate();
+//     //         if (!bootstrapValidator.isValid()) {
+//     //             return false;
+//     //         }
+//     //     }
+//     //
+//     // }
+//      transition.next()
+// });
 
-    var form = $('form.validate').first();
-    if (form.length) {
-        var bootstrapValidator = form.data('bootstrapValidator');
-        if (bootstrapValidator ) {
-            bootstrapValidator.validate();
-            if (!bootstrapValidator.isValid()) {
-                return false;
-            }
-        }
-
-    }
-    transition.next()
-});
-
-router.afterEach(function (transition) {
-
-    $('.nav-pills').find('li').removeClass('active');
-    $('.nav-pills').find('a[href="#!'+transition.to.path+'"]').parent().addClass('active');
-
-});
+// router.afterEach(function (transition) {
+//
+//     // $('.nav-pills').find('li').removeClass('active');
+//     // $('.nav-pills').find('a[href="#!'+transition.to.path+'"]').parent().addClass('active');
+//
+// });
 
 router.start({
-    store,
-    components: { App }
-}, '#app');
-
+  store,
+  components: {App}
+}, '#app')
 

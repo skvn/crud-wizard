@@ -97,7 +97,8 @@ import { getConfig, getModel } from '../vuex/getters'
                                     'The scope has been deleted.',
                                     'success'
                             );
-                        }, () => {});
+                        }, () => {
+                        });
 
 
             },

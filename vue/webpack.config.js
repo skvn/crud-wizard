@@ -4,14 +4,37 @@ var webpack = require('webpack')
 module.exports = {
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, '../public/js'),
-    publicPath: '/vendor/crud-wizard/js',
+    path: path.resolve(__dirname, 'assets/js'),
+    publicPath: '/assets/js',
     filename: 'wizard_build.js'
   },
+  resolve: {
+    extensions: ['', '.js', '.vue'],
+    fallback: [path.join(__dirname, '../node_modules')],
+    alias: {
+      'src': path.resolve(__dirname, 'src'),
+      'assets': path.resolve(__dirname, 'assets'),
+      'components': path.resolve(__dirname, 'src/components')
+    }
+  },
   resolveLoader: {
-    root: path.join(__dirname, 'node_modules'),
+    root: path.join(__dirname, 'node_modules')
   },
   module: {
+   /* preLoaders: [
+      {
+        test: /\.vue$/,
+        loader: 'eslint',
+        include: projectRoot,
+        exclude: /node_modules/
+      },
+      {
+        test: /\.js$/,
+        loader: 'eslint',
+        include: projectRoot,
+        exclude: /node_modules/
+      }
+    ], */
     loaders: [
       {
         test: /\.vue$/,
@@ -39,6 +62,9 @@ module.exports = {
         }
       }
     ]
+  },
+  eslint: {
+    formatter: require('eslint-friendly-formatter')
   },
   devServer: {
     historyApiFallback: true,

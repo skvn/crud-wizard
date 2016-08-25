@@ -7,6 +7,5 @@
   "dependencies": {
     "bower": "^1.7.9",
     "gulp-uglify": "^1.5.3"
-
   }
 }

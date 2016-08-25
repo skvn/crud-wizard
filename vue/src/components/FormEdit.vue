@@ -138,8 +138,8 @@
 
         },
 
-      data(){
-            return{
+        data(){
+            return {
                 tabs: [],
                 fields: [],
                 availableFields:[],

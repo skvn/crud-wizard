@@ -1,0 +1,65 @@
+<main class="mdl-layout__content mdl-color--grey-100 page" style="">
+    <section>
+
+        <div class="mdl-color--cyan ml-header relative clear">
+            <div class="p-20">
+                <h3 class="mdl-color-text--white m-t-20 m-b-5">User management</h3>
+                <h4 class="mdl-color-text--cyan-100 m-b-20 no-m-t w100">Manage all the users on your SAAS platform</h4>
+            </div>
+        </div>
+
+        <div class="mdl-grid mdl-grid--no-spacing">
+
+            <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-tablet mdl-cell--12-col-phone mdl-color--grey-100">
+                <div class="p-40 p-r-20 p-20--small">
+                    <div class=" mdl-color-text--blue-grey-400">
+                        <h3  v-if="configLoaded" class="mdl-card__title-text">
+                        <i class="material-icons">settings</i>  Edit Model "{{ model.name }}"
+                        </h3>
+
+
+                        <p>Blah balah blah</p>
+                        <div class="m-t-30">
+                            <ul class="list-bordered">
+                                <li><a href="" class="mdl-color-text--red">
+                                    <i class="material-icons m-r-5 f11">save</i>
+                                    Save model
+                                </a></li>
+                                <li><a href="" class=" mdl-color-text--blue-grey-500">
+                                    <i class="material-icons m-r-5 f11">exit_to_app</i>
+                                    Exit
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mdl-cell mdl-cell--9-col  mdl-cell--12-col-tablet mdl-cell--12-col-phone no-p-l">
+                <div class="p-20 ml-card-holder ml-card-holder-first">
+                    <div class="mdl-card mdl-shadow--1dp">
+                        <div class="p-30">
+                            <div  v-if="configLoaded">
+                                <mdl-tabs>
+                                    <mdl-tab tab="General" :link="{ name: 'model_general', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
+                                    <mdl-tab tab="Relations" :link="{ name: 'model_relations', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
+                                    <mdl-tab tab="Fields" :link="{ name: 'model_fields', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
+                                    <mdl-tab tab="Forms" :link="{ name: 'model_forms', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
+                                    <mdl-tab tab="Scopes" :link="{ name: 'model_scopes', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
+                                </mdl-tabs>
+                                <slot></slot>
+                            </div>
+                            <div v-else>
+                                <mdl-progress indeterminate></mdl-progress>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+</main>
+<!--<mdl-button @click="saveModel()" colored primary v-mdl-ripple-effect><i class="material-icons">save</i> Save model</mdl-button>-->
+
