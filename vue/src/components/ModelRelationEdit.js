@@ -1,5 +1,6 @@
 import ModelMixin from '../mixins/ModelMixin'
-import template from './html/model_relation_edit.html';
+import template from './html/model_relation_edit.html'
+import Actions from '../vuex/Actions'
 
 export default {
   template,
@@ -41,12 +42,6 @@ export default {
       this.edit = true
       this.relation = this.model.fields[key]
       this.relation.key = key
-    },
-
-    'hide::modal' (id) {
-      if (id === 'relation_modal') {
-        this.initEmptyRelation()
-      }
     }
   },
 
@@ -54,6 +49,11 @@ export default {
     initEmptyRelation () {
       this.relation = Object.assign({}, this.empty_relation)
       this.edit = false
+    },
+
+    close () {
+      this.$refs.popup.close()
+      this.initEmptyRelation()
     },
 
     save () {
@@ -97,24 +97,25 @@ export default {
 
   watch: {
     'relation.relation': function (value) {
-      var page_url = Actions.apiUrl + 'getAvailableRelationFieldTypes'
-      this.$http.get(page_url, {params: {args: [value]}}).then((resp)=> {
-        this.$set('edit_types', resp.json())
-      })
-
+      if (value) {
+        var pageUrl = Actions.apiUrl + 'getAvailableRelationFieldTypes'
+        this.$http.get(pageUrl, {params: {args: [value]}}).then((resp)=> {
+          this.$set('edit_types', resp.json())
+        })
+      }
     },
     'relation.model': function (value) {
       if (value) {
-        var page_url = Actions.apiUrl + 'getRelationModelData'
-        this.$http.get(page_url, {params: {args: [value]}}).then((resp)=> {
+        var pageUrl = Actions.apiUrl + 'getRelationModelData'
+        this.$http.get(pageUrl, {params: {args: [value]}}).then((resp)=> {
           this.$set('model_obj', resp.json())
         })
       }
     },
     'relation.pivot_table': function (value) {
       if (value) {
-        var page_url = Actions.apiUrl + 'getTableColumns'
-        this.$http.get(page_url, {params: {args: [value]}}).then((resp)=> {
+        var pageUrl = Actions.apiUrl + 'getTableColumns'
+        this.$http.get(pageUrl, {params: {args: [value]}}).then((resp)=> {
           this.$set('pivot_columns', resp.json())
         })
       }
