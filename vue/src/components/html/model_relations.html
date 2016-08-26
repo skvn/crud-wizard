@@ -1,0 +1,37 @@
+<model-edit>
+    <add-relation-btn></add-relation-btn>
+
+        <table class="mdl-data-table mdl-js-data-table	" style="width:100%">
+        <thead>
+        <tr>
+
+            <th class="mdl-data-table__cell--non-numeric" width="50px">Type</th>
+            <th class="mdl-data-table__cell--non-numeric" width="150px">Attribute name</th>
+            <th class="mdl-data-table__cell--non-numeric" width="150px">Edit Type</th>
+            <th  class="mdl-data-table__cell--non-numeric">Title</th>
+            <th class="mdl-data-table__cell--non-numeric" width="150px;">Relation model</th>
+            <th width="100px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(key, rel) in model.fields | filterBy isRelation">
+            <td  class="mdl-data-table__cell--non-numeric"><span class="text-success">
+                                            <img :title="rel.relation"
+                                                 :src="'/assets/images/icons/'+ rel.relation+ '.png'"/></span>
+            </td>
+            <td  class="mdl-data-table__cell--non-numeric">{{ key }}</td>
+            <td  class="mdl-data-table__cell--non-numeric">{{ rel.type }}</td>
+            <td  class="mdl-data-table__cell--non-numeric">{{ rel.title }}</td>
+            <td  class="mdl-data-table__cell--non-numeric">{{ rel.model }}</td>
+            <td><a class="text-info" style="font-size: 20px;" href="#" @click.prevent="editRelation(key)"><i
+                    class="fa fa-edit"> </i></a>
+                &nbsp;&nbsp;&nbsp;
+                <a class="text-danger" href="#" @click.prevent="this.$dispatch('delete_field',key)"
+                   style="font-size: 20px;"><i class="fa fa-trash-o"> </i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <add-relation-btn></add-relation-btn>
+    <relation-edit></relation-edit>
+</model-edit>

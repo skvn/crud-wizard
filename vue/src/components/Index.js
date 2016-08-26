@@ -24,15 +24,12 @@ export default{
 
   },
 
-  created () {
-    this.fetchModels()
-  },
-
-  methods: {
-    ee() {
-      window.alert('11');
+  route: {
+    data ({to}) {
+      if (!this.modelsLoaded) {
+        this.fetchModels()
+      }
     }
   }
-
 }
 

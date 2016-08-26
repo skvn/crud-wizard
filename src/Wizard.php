@@ -887,33 +887,44 @@ class Wizard
     }//
 
 
-    public function getWizardConfig($table)
+    public function getWizardConfig($table, $include_common=true)
     {
         $modelConfig = $this->getModelConfig($table, false, false);
         $obj = CrudModel::createInstance($modelConfig['name']);
-        return [
-            'acls' => $this->app['config']['acl.acls'],
-            'table_columns' => $this->getTableColumns($table),
-            'table_int_columns' => $this->getIntTableColumns($table),
-            'track_history_options' => $this->getTrackHistoryOptions(),
-            'relation_options' => $this->getRelations(),
-            'all_models' => $this->getAvailableModels('snake_case'),
-            'on_delete_actions' => $this->getOndeleteActions(),
-            'pivot_tables' => $this->getPossiblePivotTables(),
-            'field_options' => $this->getAvailableFieldTypes(),
-            //'fields_config' => $this->getFieldsConfig(),
-            'fields_config' => $this->getFieldsConfigDefaults(),
-            'editor_types' => $this->getAvailableEditors(),
-            'date_formats' => $this->getAvailableDateFormats(),
-            'date_time_formats' => $this->getAvailableDateTimeFormats(),
-            'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
-            'tree_lists' => $this->getAvailableTreeLists(),
-            'attrs' => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
-            'formatters' => $obj->getAvailFormatters(),
-            'scopes' => $obj->getAvailScopes()
 
+        $config = [
+            'model_config' => [
+                'table_columns' => array_combine($this->getTableColumns($table),$this->getTableColumns($table)),
+                'table_int_columns' => $this->getIntTableColumns($table),
+                'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
+                'attrs' => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
+                'formatters' => $obj->getAvailFormatters(),
+                'scopes' => $obj->getAvailScopes()
+            ],
 
+            'model' =>  $modelConfig
         ];
+
+        if ($include_common) {
+            $config['common_config'] =
+            [
+                'track_history_options' => $this->getTrackHistoryOptions(),
+                'acls' => $this->app['config']['acl.acls'],
+                'relation_options' => array_combine($this->getRelations(),$this->getRelations()),
+                'all_models' => $this->getAvailableModels('snake_case'),
+                'on_delete_actions' => $this->getOndeleteActions(),
+                'pivot_tables' => $this->getPossiblePivotTables(),
+                'field_options' => $this->getAvailableFieldTypes(),
+                'fields_config' => $this->getFieldsConfigDefaults(),
+                'editor_types' => $this->getAvailableEditors(),
+                'date_formats' => $this->getAvailableDateFormats(),
+                'date_time_formats' => $this->getAvailableDateTimeFormats(),
+                'tree_lists' => $this->getAvailableTreeLists(),
+
+            ];
+        }
+
+        return json_encode($config, JSON_NUMERIC_CHECK);
     }
 
     public function isRelationMultiple($relation)

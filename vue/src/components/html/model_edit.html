@@ -38,7 +38,6 @@
             <div class="mdl-cell mdl-cell--9-col  mdl-cell--12-col-tablet mdl-cell--12-col-phone no-p-l">
                 <div class="p-20 ml-card-holder ml-card-holder-first">
                     <div class="mdl-card mdl-shadow--1dp">
-                        <div class="p-30">
                             <div  v-if="configLoaded">
                                 <mdl-tabs>
                                     <mdl-tab tab="General" :link="{ name: 'model_general', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
@@ -47,12 +46,14 @@
                                     <mdl-tab tab="Forms" :link="{ name: 'model_forms', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
                                     <mdl-tab tab="Scopes" :link="{ name: 'model_scopes', params: { table: table }, activeClass: 'is-active'}"></mdl-tab>
                                 </mdl-tabs>
+                                <div class="p-30">
                                 <slot></slot>
+                                </div>
                             </div>
                             <div v-else>
                                 <mdl-progress indeterminate></mdl-progress>
                             </div>
-                        </div>
+
                     </div>
                 </div>
             </div>

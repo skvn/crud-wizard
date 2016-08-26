@@ -4,17 +4,16 @@ import Router from 'vue-router'
 import Vuex from 'vuex'
 import Sortable from 'vue-sortable'
 import VueMdl from 'vue-mdl'
-
-import swal from 'sweetalert2'
+import FormControls from './components/ui/form/FormControls'
+import './helpers'
 
 import App from './components/App.vue'
 import General from './components/ModelGeneral'
-import Relations from './components/Relations.vue'
+import Relations from './components/ModelRelations'
 import Fields from './components/Fields.vue'
 import Forms from './components/Forms.vue'
 import Scopes from './components/Scopes.vue'
 import Index from './components/Index'
-
 import store from './vuex/store'
 
 Vue.config.devtools = true
@@ -23,6 +22,7 @@ Vue.use(Router)
 Vue.use(Vuex)
 Vue.use(Sortable)
 Vue.use(VueMdl)
+Vue.use(FormControls)
 
 export var router = new Router()
 

@@ -1,7 +1,8 @@
 export const getModel = state => state.model
 export const getTable = state => state.table
 export const getModels = state => state.models
-export const getConfig = state => state.config
+export const getModelConfig = state => state.modelConfig
+export const getCommonConfig = state => state.commonConfig
 export const configLoaded = state => state.configLoaded
 export const modelsLoaded = state => state.modelsLoaded
 export const getRelations = state => {

@@ -4,8 +4,9 @@
 
 </template>
 <script>
-  import LayoutOneColumn from './LayoutOneColumn.vue';
-  import LayoutTwoColumn from './LayoutTwoColumn.vue';
+  import LayoutOneColumn from './LayoutOneColumn.vue'
+  import LayoutTwoColumn from './LayoutTwoColumn.vue'
+  import LayoutThreeColumn from './LayoutThreeColumn.vue'
 
   export default {
     props: {
@@ -21,7 +22,8 @@
     },
     components: {
       LayoutOneColumn,
-      LayoutTwoColumn
+      LayoutTwoColumn,
+      LayoutThreeColumn
     },
     data () {
       return {
@@ -29,8 +31,23 @@
       }
     },
     created () {
-      console.log('BBB')
-      console.log(this.structure)
+      let numCols = 1
+      for (var key in this.structure) {
+        if (this.structure.hasOwnProperty(key)) {
+          if (this.structure[key]['col'] && this.structure[key]['col'] > numCols) {
+            numCols = this.structure[key]['col']
+          }
+        }
+      }
+      switch (numCols) {
+        case 2:
+          this.formLayout = 'LayoutTwoColumn';
+          break
+        case 3:
+          this.formLayout = 'LayoutThreeColumn';
+          break
+
+      }
     }
   }
 </script>

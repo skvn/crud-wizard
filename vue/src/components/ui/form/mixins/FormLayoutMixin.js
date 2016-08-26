@@ -1,6 +1,3 @@
-import TextField from '../Text.vue'
-import SelectField from '../Select.vue'
-import SwitchField from '../Switch.vue'
 
 export default {
   props: {
@@ -13,11 +10,6 @@ export default {
       type: [Object],
       required: true
     }
-  },
-  components: {
-    TextField,
-    SelectField,
-    SwitchField
   },
   data () {
     return {

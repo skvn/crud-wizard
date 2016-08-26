@@ -1,22 +1,22 @@
 <template>
-  <label>
-
-    <select class="form-control default_select" id="rtype" v-model.sync="$parent.new_relation_type"
-            style="display:inline; width:250px;">
-      <option value="">Choose relation type</option>
-
-      <option v-for="rel in $parent.$parent.config.relation_options" v-bind:value="rel">
-        {{ rel }}
-      </option>
-
-
-    </select>
-    <a href="#" class="btn btn-success" @click.prevent="$parent.addRelation"><i class="fa fa-plus"></i>
-      Add relation</a>
-  </label>
+  <div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--4-col">
+      <mdl-select label="Choose relation type" :options="$parent.commonConfig.relation_options" :value.sync="type"></mdl-select>
+    </div>
+    <div class="mdl-cell mdl-cell--2-col">
+      <mdl-button v-mdl-ripple-effect icon  colored  @click="this.$dispatch('relation::add', type)">
+        <i class="material-icons">add</i> Add relation
+      </mdl-button>
+    </div>
+  </div>
 </template>
 
 <script>
-
-  export default{}
+  export default {
+    data () {
+      return {
+        type: ''
+      }
+    }
+  }
 </script>

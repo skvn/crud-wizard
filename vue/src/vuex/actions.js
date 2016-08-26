@@ -9,10 +9,10 @@ export default Actions
 
 Actions.apiUrl = apiUrl
 
-Actions.fetchConfig = function ({dispatch}, table) {
+Actions.fetchConfig = function ({dispatch}, table, loadCommon = true) {
   dispatch('SET_TABLE', table)
   var pageUrl = apiUrl + 'getWizardConfig'
-  Vue.http.get(pageUrl, {params: {args: [table]}})
+  Vue.http.get(pageUrl, {params: {args: [table, +loadCommon]}})
     .then((response) => dispatch('SET_CONFIG', response.json()))
     .catch((error) => Promise.reject(error))
 }
@@ -24,38 +24,27 @@ Actions.fetchModels = function ({dispatch}) {
     .catch((error) => Promise.reject(error))
 }
 
-Actions.fetchModel = function ({dispatch}, table) {
-  var pageUrl = apiUrl + 'getModelConfig'
-  return Vue.http.get(pageUrl, {params: {args: [table]}})
-    .then((response) => dispatch('SET_MODEL', response.json()))
-    .catch((error) => Promise.reject(error))
-}
+// Actions.fetchModel = function ({dispatch}, table) {
+//   var pageUrl = apiUrl + 'getModelConfig'
+//   return Vue.http.get(pageUrl, {params: {args: [table]}})
+//     .then((response) => dispatch('SET_MODEL', response.json()))
+//     .catch((error) => Promise.reject(error))
+// }
 
-Actions.validateForm = function ($form, callback) {
-  let bootstrapValidator = $form.data('bootstrapValidator')
-  if (bootstrapValidator) {
-    bootstrapValidator.validate()
-    console.log(bootstrapValidator)
-    console.log(bootstrapValidator.isValid())
-    if (!bootstrapValidator.isValid()) {
-      swal('Please, fill all the required fields', '', 'warning')
-      return false
-    }
-  }
+// Actions.validateForm = function ($form, callback) {
+//   let bootstrapValidator = $form.data('bootstrapValidator')
+//   if (bootstrapValidator) {
+//     bootstrapValidator.validate()
+//     console.log(bootstrapValidator)
+//     console.log(bootstrapValidator.isValid())
+//     if (!bootstrapValidator.isValid()) {
+//       swal('Please, fill all the required fields', '', 'warning')
+//       return false
+//     }
+//   }
+//
+//   return callback()
+// }
 
-  return callback()
-}
 
-Array.prototype.move = function (from, to) {
-  this.splice(to, 0, this.splice(from, 1)[0])
-}
-
-Array.prototype.uniqueMerge = function (a) {
-  for (var nonDuplicates = [], i = 0, l = a.length; i < l; ++i) {
-    if (this.indexOf(a[i]) === -1) {
-      nonDuplicates.push(a[i])
-    }
-  }
-  return this.concat(nonDuplicates)
-}
 

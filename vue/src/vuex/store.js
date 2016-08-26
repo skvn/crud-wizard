@@ -17,43 +17,38 @@ const state = {
   table: '',
   model: defaultModel,
   models: {},
-  config: {
+  commonConfig: {
     'acls': {},
     'field_section_config': {}
   },
+  modelConfig: {},
   configLoaded: false,
   modelsLoaded: false
 
 }
 
 const mutations = {
-  SET_MODEL (state, model) {
-    // console.log(state.model);
-    state.model = Object.assign({}, defaultModel, model)
-    // state.configLoaded = true;
-    // console.log(state.model);
+  SET_CONFIG (state, modelReceived) {
+    state.model = Object.assign({}, defaultModel, modelReceived['model'])
+    state.modelConfig = modelReceived['model_config']
+    if ('common_config' in modelReceived) {
+      state.commonConfig = modelReceived['common_config']
+    }
+    state.configLoaded = true
   },
-
   SET_TABLE (state, table) {
     state.table = table
   },
-
   RESET_TABLE (state, table) {
     state.table = ''
     state.configLoaded = false
     state.model = {}
+    state.modelConfig = {}
   },
-
   SET_MODELS (state, models) {
-    state.models = JSON.parse(JSON.stringify(models))
+    state.models = models
     state.modelsLoaded = true
-  },
-
-  SET_CONFIG (state, config) {
-    state.config = config
-    state.configLoaded = true
   }
-
 }
 
 export default new Vuex.Store({

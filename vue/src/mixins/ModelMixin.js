@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import store from '../vuex/store'
 import Actions from '../vuex/actions'
-import {getModel, getConfig, getTable, configLoaded} from '../vuex/getters'
+import {getModel, getModelConfig, getCommonConfig, getTable, configLoaded} from '../vuex/getters'
 import swal from 'sweetalert2'
 
 export default {
@@ -10,19 +10,27 @@ export default {
     getters: {
       model: getModel,
       table: getTable,
-      config: getConfig,
+      modelConfig: getModelConfig,
+      commonConfig: getCommonConfig,
       configLoaded: configLoaded
     },
     actions: {
-      fetchModel: Actions.fetchModel,
       fetchConfig: Actions.fetchConfig
     }
   },
-  events: {
 
+  events: {
     delete_field (key) {
       this.deleteField(key)
-    },
+    }
+  },
+  route: {
+    data ({to}) {
+      if (this.table === to.params.table) {
+        return
+      }
+      this.fetchConfig(to.params.table, !this.configLoaded)
+    }
   },
   methods: {
 
