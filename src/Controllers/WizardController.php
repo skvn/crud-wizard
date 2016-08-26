@@ -1,24 +1,22 @@
-<?php  namespace Skvn\CrudWizard\Controllers;
+<?php
+
+namespace Skvn\CrudWizard\Controllers;
 
 use Illuminate\Routing\Controller;
-use Skvn\Crud\Exceptions\Exception as CrudException;
 use Skvn\Crud\Exceptions\WizardException;
 use Skvn\Crud\Models\CrudModel;
 use Skvn\CrudWizard\Migrator;
 use Skvn\CrudWizard\Wizard;
 use Skvn\CrudWizard\CrudModelPrototype;
-use Skvn\Crud\Form\Form;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Application as LaravelApplication;
 
-class WizardController extends Controller {
-
-
-
+class WizardController extends Controller
+{
     private $request;
     private $wizard;
-    
-    function __construct(LaravelApplication $app, Request $request)
+
+    public function __construct(LaravelApplication $app, Request $request)
     {
         $this->app = $app;
         $this->request = $request;
@@ -28,75 +26,62 @@ class WizardController extends Controller {
         $this->wizard = new Wizard();
 
         $alert = $this->wizard->getCheckAlert();
-        if ($alert)
-        {
+        if ($alert) {
             view()->share('alert', $alert);
         }
 
         \View::share('cmsHelper', $this->cmsHelper);
         \View::share('wizard', $this->wizard);
         \View::share('config', $this->app['config']);
-        
     }
 
-    function index()
+    public function index()
     {
 
 //        if ($this->request->isMethod('post'))
 //        {
 //             return $this->createModels();
 //        }
-        return view('crud-wizard::new_page', ['wizard'=>$this->wizard]);
+        return view('crud-wizard::new_page', ['wizard' => $this->wizard]);
     }
 
-
-    function model($table)
+    public function model($table)
     {
-
-
         $model = $this->wizard->getModelConfig($table, false, false);
-        if (!$model)
-        {
-                $model_name = studly_case(trim($table));
-                $proto = new CrudModelPrototype($table, ['name' => $model_name]);
-                $proto->record();
-
+        if (!$model) {
+            $model_name = studly_case(trim($table));
+            $proto = new CrudModelPrototype($table, ['name' => $model_name]);
+            $proto->record();
         } else {
-
             $model_name = $model['name'];
         }
 
         $alert = $this->wizard->getCheckAlert($model);
-        if ($alert)
-        {
+        if ($alert) {
             view()->share('alert', $alert);
         }
 
         //$modelObj = CrudModel::createInstance($model['name']);
         return view('crud-wizard::model', [
-                'table'=>$table,
-                'model'=>$model_name,
+                'table' => $table,
+                'model' => $model_name,
           //      'modelObj'=>$modelObj,
             ]
         );
     }
 
-
-    function menu()
+    public function menu()
     {
-
         return view('crud-wizard::menu');
     }
 
-    function createModels()
+    public function createModels()
     {
         $tables = $this->request->input('models');
-        foreach ($tables as $table=>$model)
-        {
-            if (!empty($model))
-            {
+        foreach ($tables as $table => $model) {
+            if (!empty($model)) {
                 $model = studly_case(trim($model));
-                $proto = new CrudModelPrototype(['name'=>$model, 'table'=>$table]);
+                $proto = new CrudModelPrototype(['name' => $model, 'table' => $table]);
                 $proto->record();
             }
         }
@@ -104,68 +89,61 @@ class WizardController extends Controller {
         return redirect()->back();
     }
 
-
 //    function getTableColumns($table)
 //    {
-//
+
 //        return $this->wizard->getTableColumns($table);
 //    }
-//
-//
+
 //    function getModelColumns($model)
 //    {
-//
+
 //        return $this->wizard->getAllModelColumns($model);
 //    }
 
-
-    function getWizardMethod($method)
+    public function getWizardMethod($method)
     {
-
-        return response($this->wizard->$method(...\Request::get('args',[])))
+        return response($this->wizard->$method(...\Request::get('args', [])))
             ->header('Access-Control-Allow-Origin', 'http://localhost:8080');
     }
-//
+
 //    function getFieldRowTpl($field_name)
 //    {
 //        return view('crud-wizard::blocks/fields/field_row', ['f'=>$field_name]);
 //    }
-//
+
 //    function migrationCreate()
 //    {
 //        $migrator = new Migrator($this->request);
-//
+
 //        if ($migrator->createTable()->migrate())
 //        {
 //             return redirect()->back();
-//
+
 //        } else {
-//
+
 //            return redirect()->back()->with('error', $migrator->error);
 //        }
-//
+
 //    }
-//
+
 //    function migrationAlter(Request $req)
 //    {
 //        $table = $req->get('table_name');
 //        $columns = $req->get('columns');
-//
+
 //        if (empty($table) || empty($columns))
 //        {
 //            throw new WizardException('No table name or columns specified');
 //        }
-//
-//
+
 //        $options = ['name'=>"add_".$table];
 //        $command = "make:migration:schema";
 //        \Artisan::call($command, $options);
-//
+
 //        \Artisan::call("migrate", ['--force'=>true,'--quiet'=>true]);
-//
+
 //        return redirect()->back();
-//
+
 //    }
-
-
 }

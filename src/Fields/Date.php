@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,29 +10,28 @@ class Date extends \Skvn\Crud\Form\Date implements WizardableField
     use WizardCommonFieldTrait;
 
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['format'=>'d.m.Y'];
+    public function wizardConfigDefaults(): array
+    {
+        return ['format' => 'd.m.Y'];
     }
-
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
-        return ['required','date_format'];
+    public function wizardConfigSections():array
+    {
+        return ['required', 'date_format'];
     }
 
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Date";
+        return 'Date';
     }
 
     public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
@@ -47,7 +45,5 @@ class Date extends \Skvn\Crud\Form\Date implements WizardableField
                 }
             }
         }
-
-
     }
 }

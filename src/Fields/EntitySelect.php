@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,7 +10,7 @@ class EntitySelect extends \Skvn\Crud\Form\EntitySelect implements WizardableFie
     use WizardCommonFieldTrait;
 
     /**
-     * Returns true if the  control can be used only for relation editing only
+     * Returns true if the  control can be used only for relation editing only.
      *
      * @return bool
      */
@@ -20,14 +19,13 @@ class EntitySelect extends \Skvn\Crud\Form\EntitySelect implements WizardableFie
         return true;
     }
 
-
     /**
-     * Return an array of relations for which the control can be used
+     * Return an array of relations for which the control can be used.
      *
      * @return array
      */
-    public function wizardIsForRelations():array {
-
+    public function wizardIsForRelations():array
+    {
         return [
             'hasOne',
             'hasMany',
@@ -36,24 +34,18 @@ class EntitySelect extends \Skvn\Crud\Form\EntitySelect implements WizardableFie
         ];
     }
 
-
     public function wizardDbType()
     {
         return 'integer';
     }
 
-
-    function wizardTemplate()
+    public function wizardTemplate()
     {
-        return "crud::wizard.blocks.fields.select";
+        return 'crud::wizard.blocks.fields.select';
     }
 
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Entity Select";
+        return 'Entity Select';
     }
-
-
-
 }

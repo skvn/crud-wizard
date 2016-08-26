@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -10,17 +9,13 @@ class Checkbox extends \Skvn\Crud\Form\Checkbox implements WizardableField
 {
     use WizardCommonFieldTrait;
 
-
-
     public function wizardDbType()
     {
         return 'boolean';
     }
 
-
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Checkbox";
+        return 'Checkbox';
     }
 }

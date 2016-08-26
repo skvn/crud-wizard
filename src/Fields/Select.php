@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -10,21 +9,18 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
 {
     use WizardCommonFieldTrait;
 
-
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['find'=>''];
+    public function wizardConfigDefaults(): array
+    {
+        return ['find' => ''];
     }
 
-
-
     /**
-     * Returns true if the  control can be used only for relation editing only
+     * Returns true if the  control can be used only for relation editing only.
      *
      * @return bool
      */
@@ -33,14 +29,13 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
         return false;
     }
 
-
     /**
-     * Return an array of relations for which the control can be used
+     * Return an array of relations for which the control can be used.
      *
      * @return array
      */
-    public function wizardIsForRelations():array {
-
+    public function wizardIsForRelations():array
+    {
         return [
             'hasOne',
             'hasMany',
@@ -55,32 +50,31 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
     }
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
-        return ['required','data_provider'];
+    public function wizardConfigSections():array
+    {
+        return ['required', 'data_provider'];
     }
 
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Select";
+        return 'Select';
     }
 
-    public function wizardCallbackFieldConfig (&$fieldKey,array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
     {
-        if (!empty($fieldConfig['property_name']))
-        {
+        if (!empty($fieldConfig['property_name'])) {
             $fieldKey = $fieldConfig['property_name'];
             unset($fieldConfig['property_name']);
         }
 
         if (!empty($fieldConfig['relation'])) {
             if (in_array($fieldConfig['relation'], [
-                "belongsToMany",
-                "hasMany"
+                'belongsToMany',
+                'hasMany',
             ])) {
                 $fieldConfig['multiple'] = true;
             }

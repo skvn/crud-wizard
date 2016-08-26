@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,23 +10,23 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
     use WizardCommonFieldTrait;
 
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['format'=>'d.m.Y H:i'];
+    public function wizardConfigDefaults(): array
+    {
+        return ['format' => 'd.m.Y H:i'];
     }
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
-        return ['required','date_time_format'];
+    public function wizardConfigSections():array
+    {
+        return ['required', 'date_time_format'];
     }
 
     public function wizardDbType()
@@ -35,13 +34,12 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
         return 'dateTime';
     }
 
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Date + Time";
+        return 'Date + Time';
     }
 
-    function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
     {
         $formats = $modelPrototype->wizard->getAvailableDateTimeFormats();
 
@@ -53,7 +51,5 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
                 }
             }
         }
-
-
     }
 }
