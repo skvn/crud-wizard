@@ -2,11 +2,11 @@
 
 namespace Skvn\CrudWizard;
 
-use Skvn\Crud\Form\Form;
+use Skvn\Crud\Contracts\FormControlFilterable;
 use Skvn\Crud\Form\Field;
+use Skvn\Crud\Form\Form;
 use Skvn\Crud\Models\CrudModel;
 use Skvn\CrudWizard\Contracts\WizardableField;
-use Skvn\Crud\Contracts\FormControlFilterable;
 use Skvn\CrudWizard\Exceptions\WizardException;
 
 /**
@@ -509,7 +509,7 @@ class Wizard
     public function getAvailableEditors()
     {
         return  [
-            '' => 'None',
+            ''           => 'None',
             'summernote' => 'Summernote',
 //            'tinymce' => 'TinyMCE',
             'mde' => 'Markdown',
@@ -604,7 +604,7 @@ class Wizard
     {
         $conf = $this->getModelConfig($table);
         if ($conf && !empty($conf['fields'])) {
-            if (!key_exists($data_alias, $conf['fields']) && !strpos($data_alias, '::')) {
+            if (!array_key_exists($data_alias, $conf['fields']) && !strpos($data_alias, '::')) {
                 return $data_alias;
             }
         }
@@ -647,8 +647,8 @@ class Wizard
     public function getOndeleteActions()
     {
         return [
-            '' => 'No action',
-            'delete' => 'Cascade delete',
+            ''         => 'No action',
+            'delete'   => 'Cascade delete',
             'set_null' => 'Set null',
 
         ];
@@ -662,8 +662,8 @@ class Wizard
     public function getTrackHistoryOptions()
     {
         return [
-            '' => 'Do not track',
-            'detail' => 'Detailed',
+            ''        => 'Do not track',
+            'detail'  => 'Detailed',
             'summary' => 'Summary',
 
         ];
@@ -677,7 +677,7 @@ class Wizard
     public function getAvailableTreeLists()
     {
         return [
-            'jstree' => 'JSTree',
+            'jstree'  => 'JSTree',
             'dt_tree' => 'DataTables tree grid',
             'dt_flat' => 'Datatables flat grid with breadcrumbs',
 
@@ -698,7 +698,7 @@ class Wizard
     {
         return
             [
-                'columns' => $this->getAllModelColumns($model),
+                'columns'      => $this->getAllModelColumns($model),
                 'find_methods' => $this->getAvailableSelectOptionsProviders($model),
             ];
     }
@@ -721,10 +721,10 @@ class Wizard
         $ret = [];
         foreach (self :: getAvailControls() as $control) {
             $ret[$control->controlType()] = [
-                'defaults' => $control->wizardConfigDefaults(),
+                'defaults'       => $control->wizardConfigDefaults(),
                 'is_for_virtual' => $control->wizardIsForVirtualOnly(),
-                'sections' => $control->wizardConfigSections(),
-                'custom' => $control->wizardIsCustomField(),
+                'sections'       => $control->wizardConfigSections(),
+                'custom'         => $control->wizardIsCustomField(),
 
             ];
         }
@@ -804,12 +804,12 @@ class Wizard
 
         $config = [
             'model_config' => [
-                'table_columns' => array_combine($this->getTableColumns($table), $this->getTableColumns($table)),
+                'table_columns'     => array_combine($this->getTableColumns($table), $this->getTableColumns($table)),
                 'table_int_columns' => $this->getIntTableColumns($table),
-                'find_methods' => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
-                'attrs' => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
-                'formatters' => $obj->getAvailFormatters(),
-                'scopes' => $obj->getAvailScopes(),
+                'find_methods'      => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
+                'attrs'             => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
+                'formatters'        => $obj->getAvailFormatters(),
+                'scopes'            => $obj->getAvailScopes(),
             ],
 
             'model' => $modelConfig,
@@ -819,17 +819,17 @@ class Wizard
             $config['common_config'] =
             [
                 'track_history_options' => $this->getTrackHistoryOptions(),
-                'acls' => $this->app['config']['acl.acls'],
-                'relation_options' => array_combine($this->getRelations(), $this->getRelations()),
-                'all_models' => $this->getAvailableModels('snake_case'),
-                'on_delete_actions' => $this->getOndeleteActions(),
-                'pivot_tables' => $this->getPossiblePivotTables(),
-                'field_options' => $this->getAvailableFieldTypes(),
-                'fields_config' => $this->getFieldsConfigDefaults(),
-                'editor_types' => $this->getAvailableEditors(),
-                'date_formats' => $this->getAvailableDateFormats(),
-                'date_time_formats' => $this->getAvailableDateTimeFormats(),
-                'tree_lists' => $this->getAvailableTreeLists(),
+                'acls'                  => $this->app['config']['acl.acls'],
+                'relation_options'      => array_combine($this->getRelations(), $this->getRelations()),
+                'all_models'            => $this->getAvailableModels('snake_case'),
+                'on_delete_actions'     => $this->getOndeleteActions(),
+                'pivot_tables'          => $this->getPossiblePivotTables(),
+                'field_options'         => $this->getAvailableFieldTypes(),
+                'fields_config'         => $this->getFieldsConfigDefaults(),
+                'editor_types'          => $this->getAvailableEditors(),
+                'date_formats'          => $this->getAvailableDateFormats(),
+                'date_time_formats'     => $this->getAvailableDateTimeFormats(),
+                'tree_lists'            => $this->getAvailableTreeLists(),
 
             ];
         }

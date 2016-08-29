@@ -75,41 +75,41 @@ class CrudModelPrototype
     private $useTraits = [];
 
     private $configDefaults = [
-        'acl' => '',
+        'acl'           => '',
         'track_history' => '',
 
     ];
 
     private $fieldDefaults = [
         'hint_default' => '',
-        'hint' => '',
-        'required' => '0',
-        'extra' => '',
-        'find' => '',
-        'editor_type' => '',
-        'editor' => '0',
-        'min' => '',
-        'max' => '',
+        'hint'         => '',
+        'required'     => '0',
+        'extra'        => '',
+        'find'         => '',
+        'editor_type'  => '',
+        'editor'       => '0',
+        'min'          => '',
+        'max'          => '',
 
     ];
 
     private $listActionDefaults = [
-        'command' => '',
-        'event' => '',
-        'popup' => '',
-        'popup_id' => '',
-        'class' => '',
+        'command'   => '',
+        'event'     => '',
+        'popup'     => '',
+        'popup_id'  => '',
+        'class'     => '',
         'btn_class' => '',
-        'confirm' => '',
-        'ifcolumn' => '',
+        'confirm'   => '',
+        'ifcolumn'  => '',
     ];
 
     private $listColumnDefaults = [
-        'format' => '',
-        'db_field' => '',
-        'width' => '',
-        'orderable' => 0,
-        'invisible' => 0,
+        'format'     => '',
+        'db_field'   => '',
+        'width'      => '',
+        'orderable'  => 0,
+        'invisible'  => 0,
         'searchable' => 0,
         'filterable' => 0,
     ];
@@ -124,10 +124,10 @@ class CrudModelPrototype
     public function __construct($table, $config_data)
     {
         $this->traits = [
-            'tree' => Config::get('crud_common.tree_trait', '\Skvn\Crud\Traits\ModelTreeTrait'),
+            'tree'       => Config::get('crud_common.tree_trait', '\Skvn\Crud\Traits\ModelTreeTrait'),
             'inline_img' => Config::get('crud_common.inline_image_trait', 'Skvn\Crud\Traits\ModelInlineImgTrait'),
-            'attach' => Config::get('crud_common.attach_trait', 'Skvn\Crud\Traits\ModelAttachedTrait'),
-            'history' => Config::get('crud_common.history_trait', 'Skvn\Crud\Traits\ModelHistoryTrackTrait'),
+            'attach'     => Config::get('crud_common.attach_trait', 'Skvn\Crud\Traits\ModelAttachedTrait'),
+            'history'    => Config::get('crud_common.history_trait', 'Skvn\Crud\Traits\ModelHistoryTrackTrait'),
         ];
 
         $this->config_data = $config_data;
@@ -164,13 +164,13 @@ class CrudModelPrototype
 
         if (!count($this->errors)) {
             return [
-                'success' => true,
+                'success'    => true,
                 'migrations' => $this->migrations_created,
             ];
         } else {
             return [
                 'success' => false,
-                'errors' => $this->errors,
+                'errors'  => $this->errors,
             ];
         }
     }
@@ -188,7 +188,7 @@ class CrudModelPrototype
             if (!empty($rel['relation'])) {
 
                 //need to record pivot?
-                if ($rel[ 'relation'] == 'belongsToMany' && isset($rel['pivot']) && $rel['pivot'] == '0') {
+                if ($rel['relation'] == 'belongsToMany' && isset($rel['pivot']) && $rel['pivot'] == '0') {
                     $pdata = [];
 
                     $tables = [
@@ -285,8 +285,8 @@ class CrudModelPrototype
                 $this->old_config_data['tree'] =
                     [
                         'depth_column' => 'tree_level',
-                        'path_column' => 'tree_path',
-                        'pid_column' => 'tree_pid',
+                        'path_column'  => 'tree_path',
+                        'pid_column'   => 'tree_pid',
                         'order_column' => 'tree_order',
                     ];
             }

@@ -64,7 +64,7 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
         return 'Select';
     }
 
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         if (!empty($fieldConfig['property_name'])) {
             $fieldKey = $fieldConfig['property_name'];

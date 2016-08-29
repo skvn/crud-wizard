@@ -3,15 +3,17 @@
 namespace Skvn\CrudWizard;
 
 use Illuminate\Http\Request;
-use Skvn\Crud\Form\Form;
-use Skvn\Crud\Exceptions\WizardException;
 use Skvn\Crud\Contracts\WizardableField;
+use Skvn\Crud\Exceptions\WizardException;
+use Skvn\Crud\Form\Form;
 
 class Migrator
 {
     public $error;
 
-    private $request, $app, $existing;
+    private $request;
+    private $app;
+    private $existing;
 
     public function __construct(Request $request = null)
     {
@@ -42,7 +44,7 @@ class Migrator
         if (!$this->checkTableExists($table)) {
             $migration = [
                 'table_name' => $table,
-                'class' => 'Create'.studly_case($table).'Table',
+                'class'      => 'Create'.studly_case($table).'Table',
             ];
 
             $path = base_path().'/database/migrations/'.date('Y_m_d_His').
