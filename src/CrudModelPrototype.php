@@ -162,7 +162,7 @@ class CrudModelPrototype
         $this->recordMigrations();
         //$this->migrate();
 
-        if (!count($this->errors)) {
+        if (! count($this->errors)) {
             return [
                 'success'    => true,
                 'migrations' => $this->migrations_created,
@@ -180,12 +180,12 @@ class CrudModelPrototype
      */
     private function processRelations()
     {
-        if (empty($this->config_data['fields']) || !is_array($this->config_data['fields'])) {
+        if (empty($this->config_data['fields']) || ! is_array($this->config_data['fields'])) {
             return;
         }
 
         foreach ($this->config_data['fields'] as $key => $rel) {
-            if (!empty($rel['relation'])) {
+            if (! empty($rel['relation'])) {
 
                 //need to record pivot?
                 if ($rel['relation'] == 'belongsToMany' && isset($rel['pivot']) && $rel['pivot'] == '0') {
@@ -217,33 +217,33 @@ class CrudModelPrototype
     private function processFields()
     {
         $fields = [];
-        if (!empty($this->config_data['fields'])) {
+        if (! empty($this->config_data['fields'])) {
             foreach ($this->config_data['fields'] as $key => $f) {
                 $k = $key;
                 if (empty($f['relation'])) {
                     if (empty($f['fields']) && empty($f['field'])) {
-                        if (!isset($this->column_types[$k])) {
+                        if (! isset($this->column_types[$k])) {
                             $this->add_fields[$k] = $f;
                         }
-                    } elseif (!empty($f['field'])) {
-                        if (!isset($this->column_types[$f['field']])) {
+                    } elseif (! empty($f['field'])) {
+                        if (! isset($this->column_types[$f['field']])) {
                             $this->add_fields[$f['field']] = $f;
                         }
-                    } elseif (!empty($f['fields'])) {
+                    } elseif (! empty($f['fields'])) {
                         if (isset($f['fields'][0])) {
-                            if (!isset($this->column_types[$f['fields'][0]])) {
+                            if (! isset($this->column_types[$f['fields'][0]])) {
                                 $this->add_fields[$f['fields'][0]] = $f;
                             }
                         }
                         if (isset($f['fields'][1])) {
-                            if (!isset($this->column_types[$f['fields'][1]])) {
+                            if (! isset($this->column_types[$f['fields'][1]])) {
                                 $this->add_fields[$f['fields'][1]] = $f;
                             }
                         }
                     }
                 }
 
-                if (!empty($f['type'])) {
+                if (! empty($f['type'])) {
 
                     //process field config by field
                     if ($control = Wizard::getAvailControl($f['type'])) {
@@ -255,7 +255,7 @@ class CrudModelPrototype
 
                     //traits
                     if ($f['type'] == 'textarea'
-                        && !empty($f['editor_type'])
+                        && ! empty($f['editor_type'])
                         && $f['editor_type'] == 'summernote') {
                         $this->useTraits[] = 'inline_img';
                     }
@@ -280,7 +280,7 @@ class CrudModelPrototype
 
     protected function buildConfig()
     {
-        if (!empty($this->config_data['is_tree'])) {
+        if (! empty($this->config_data['is_tree'])) {
             if (empty($this->old_config_data['tree'])) {
                 $this->old_config_data['tree'] =
                     [
@@ -294,7 +294,7 @@ class CrudModelPrototype
             $this->useTraits[] = 'tree';
         }
 
-        if (!empty($this->config_data['track_history'])) {
+        if (! empty($this->config_data['track_history'])) {
             $this->useTraits[] = 'history';
         }
 
@@ -313,7 +313,7 @@ class CrudModelPrototype
         }
 
         //fields
-        if (!empty($this->config_data['fields']) && is_array($this->config_data['fields'])) {
+        if (! empty($this->config_data['fields']) && is_array($this->config_data['fields'])) {
             foreach ($this->config_data['fields'] as $k => $f) {
                 foreach ($this->fieldDefaults as $dk => $dv) {
                     if (isset($f[$dk]) && $f[$dk] === $dv) {
@@ -324,11 +324,11 @@ class CrudModelPrototype
         }
 
         //scopes
-        if (!empty($this->config_data['scopes']) && is_array($this->config_data['scopes'])) {
+        if (! empty($this->config_data['scopes']) && is_array($this->config_data['scopes'])) {
             foreach ($this->config_data['scopes'] as $sk => $scope) {
                 //list cols
                 if (isset($scope['list'])) {
-                    if (!count($scope['list'])) {
+                    if (! count($scope['list'])) {
                         unset($this->config_data['scopes'][$sk]['list']);
                     } else {
                         foreach ($scope['list'] as $ck => $col) {
@@ -343,7 +343,7 @@ class CrudModelPrototype
 
                 //list actions
                 if (isset($scope['list_actions'])) {
-                    if (!count($scope['list_actions'])) {
+                    if (! count($scope['list_actions'])) {
                         unset($this->config_data['scopes'][$sk]['list_actions']);
                     } else {
                         foreach ($scope['list_actions'] as $lak => $action) {
@@ -466,7 +466,7 @@ class CrudModelPrototype
     protected function recordModels()
     {
         //record main model (ONLY ONCE)
-        if (!file_exists($this->path.'/'.$this->config_data['name'].'.php')) {
+        if (! file_exists($this->path.'/'.$this->config_data['name'].'.php')) {
             @mkdir($this->path);
             $stub = file_get_contents(__DIR__.'/../views/stubs/model.stub');
             $stub = str_replace('[NAMESPACE]', $this->namespace, $stub);
@@ -481,13 +481,13 @@ class CrudModelPrototype
                 $traits = $reflection->getTraitNames();
                 foreach ($this->useTraits as $trait) {
                     $trait = ltrim($this->traits[$trait], '\\');
-                    if (!in_array($trait, $traits)) {
+                    if (! in_array($trait, $traits)) {
                         $insertTraits[] = '    use \\'.$trait.';';
                     }
                 }
                 if (count($insertTraits)) {
                     $fileCts = file_get_contents($this->path.'/'.$this->config_data['name'].'.php');
-                    if (preg_match('#.*(class.+'.$this->config_data['name'].".*\{)#siUm", $fileCts, $matches) && !empty($matches[1])) {
+                    if (preg_match('#.*(class.+'.$this->config_data['name'].".*\{)#siUm", $fileCts, $matches) && ! empty($matches[1])) {
                         $fileCts = str_replace($matches[1], $matches[1]."\n".implode("\n", $insertTraits), $fileCts);
                         file_put_contents($this->path.'/'.$this->config_data['name'].'.php', $fileCts);
                     } else {
@@ -509,7 +509,7 @@ class CrudModelPrototype
 
     private function recordPivotMigrations()
     {
-        if (!empty($this->migrations_data['pivot']) && is_array($this->migrations_data['pivot'])) {
+        if (! empty($this->migrations_data['pivot']) && is_array($this->migrations_data['pivot'])) {
             $migrator = new Migrator();
             foreach ($this->migrations_data['pivot'] as $p) {
                 if ($migrator->createPivotTable($p)) {
@@ -529,12 +529,12 @@ class CrudModelPrototype
             $columns = [];
 
             foreach ($this->add_fields as $fname => $fdesc) {
-                if (!empty($fdesc['type'])) {
+                if (! empty($fdesc['type'])) {
                     if ($control = Wizard::getAvailControl($fdesc['type'])) {
                         if ($control instanceof \Skvn\CrudWizard\Contracts\WizardableField) {
-                            if (!$control->wizardIsForRelationOnly() && !$control->wizardIsForVirtualOnly()) {
+                            if (! $control->wizardIsForRelationOnly() && ! $control->wizardIsForVirtualOnly()) {
                                 $dbtype = $control->wizardDbType();
-                                if (!empty($dbtype)) {
+                                if (! empty($dbtype)) {
                                     $columns[$fname] = $dbtype;
                                 }
                             }

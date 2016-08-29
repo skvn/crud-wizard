@@ -50,10 +50,10 @@ class Textarea extends \Skvn\Crud\Form\TextArea implements WizardableField
 
     public function wizardCallbackModelConfig($fieldKey, array &$modelConfig, $modelPrototype)
     {
-        if (!empty($modelConfig['fields'][$fieldKey]['editor'])) {
-            if (!isset($modelConfig['inline_img'])) {
+        if (! empty($modelConfig['fields'][$fieldKey]['editor'])) {
+            if (! isset($modelConfig['inline_img'])) {
                 $modelConfig['inline_img'] = [];
-                if (!isset($modelConfig['traits'])) {
+                if (! isset($modelConfig['traits'])) {
                     $modelConfig['traits'] = [];
                 }
                 $modelConfig['traits'][] = 'ModelInlineImgTrait';

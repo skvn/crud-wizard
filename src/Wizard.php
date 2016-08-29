@@ -105,20 +105,20 @@ class Wizard
 //           return 'Config directory "'.$this->config_dir_path.'" is not writable';
 //        }
 
-        if (!$this->checkConfigDir()) {
+        if (! $this->checkConfigDir()) {
             return 'Config directory "'.$this->config_dir_path.'" is not writable';
         }
 
-        if (!$this->checkModelsDir()) {
+        if (! $this->checkModelsDir()) {
             return 'Models directory "'.$this->model_dir_path.'" is not writable';
         }
 
-        if (!$this->checkMigrationsDir()) {
+        if (! $this->checkMigrationsDir()) {
             return 'Migrations directory "'.base_path().'/database/migrations" is not writable';
         }
 
         if ($model) {
-            if (!$this->checkUnsupportedConfig($model)) {
+            if (! $this->checkUnsupportedConfig($model)) {
                 return 'Model config contains data which is not supported yet by the Wizard';
             }
         }
@@ -224,7 +224,7 @@ class Wizard
      */
     public function getTableColumns($table)
     {
-        if (!isset($this->table_columns[$table])) {
+        if (! isset($this->table_columns[$table])) {
             $cols = $this->app['db']->connection()->getSchemaBuilder()->getColumnListing($table);
             sort($cols);
             $this->table_columns[$table] = $cols;
@@ -242,7 +242,7 @@ class Wizard
      */
     public function getIntTableColumns($table)
     {
-        if (!$this->table_int_columns) {
+        if (! $this->table_int_columns) {
             $this->table_int_columns = [];
             $col_types = $this->getTableColumnTypes($table);
 
@@ -267,7 +267,7 @@ class Wizard
      */
     public function getTableColumnTypes($table)
     {
-        if (!isset($this->table_column_types[$table])) {
+        if (! isset($this->table_column_types[$table])) {
             $this->app['db']->setFetchMode(\PDO :: FETCH_ASSOC);
 
             $cols = $this->app['db']->select('SELECT  COLUMN_NAME, DATA_TYPE FROM   information_schema.COLUMNS WHERE   TABLE_SCHEMA = ? AND TABLE_NAME=?', [env('DB_DATABASE'), $table]);
@@ -287,7 +287,7 @@ class Wizard
      */
     public function getAvailableModels($callback = null)
     {
-        if (!$this->available_models) {
+        if (! $this->available_models) {
             $configs = $this->getCrudConfigs();
             if ($configs) {
                 $this->available_models = array_keys($configs);
@@ -311,7 +311,7 @@ class Wizard
      */
     public function getModelConfig($table_name, $force = false, $asJSON = true)
     {
-        if (!isset($this->model_configs[$table_name]) || $force) {
+        if (! isset($this->model_configs[$table_name]) || $force) {
             if (file_exists(config_path('crud/'.$table_name.'.php'))) {
                 $this->model_configs[$table_name] = $this->app['config']->get('crud.'.$table_name);
             } else {
@@ -352,7 +352,7 @@ class Wizard
      */
     private function getCrudConfigs()
     {
-        if (!$this->crud_configs) {
+        if (! $this->crud_configs) {
             $this->crud_configs = [];
             $this->table_models = [];
 
@@ -388,7 +388,7 @@ class Wizard
         $types = [];
         foreach (self :: getAvailControls() as $control) {
             if ($control instanceof WizardableField) {
-                if (!$control->wizardIsForRelationOnly()) {
+                if (! $control->wizardIsForRelationOnly()) {
                     $types[$control->controlType()] = $control->wizardCaption();
                 }
             }
@@ -527,9 +527,9 @@ class Wizard
     {
         $config = $this->getModelConfig($table);
         $ret = [];
-        if (!empty($config['fields']) && is_array($config['fields'])) {
+        if (! empty($config['fields']) && is_array($config['fields'])) {
             foreach ($config['fields'] as $k => $field) {
-                if (!empty($field['relation'])) {
+                if (! empty($field['relation'])) {
                     $field['relation_name'] = $k;
                     $ret[$k] = $field;
                 }
@@ -546,7 +546,7 @@ class Wizard
         foreach ($configs as $conf) {
             $rels = $this->getModelRelations($conf['table']);
             foreach ($rels as $relation) {
-                if (!empty($relation['pivot_table'])) {
+                if (! empty($relation['pivot_table'])) {
                     $tables[] = $relation['pivot_table'];
                 }
             }
@@ -561,7 +561,7 @@ class Wizard
         $pivot = $this->getAllPivotTables();
         $ret = [];
         foreach ($all as $table) {
-            if (strpos($table, '_') !== false && !in_array($table, $pivot)) {
+            if (strpos($table, '_') !== false && ! in_array($table, $pivot)) {
                 $ret[] = $table;
             }
         }
@@ -574,7 +574,7 @@ class Wizard
         $ret = [];
         $configs = $this->getCrudConfigs();
         foreach ($configs as $model => $cfg) {
-            if (!empty($cfg['list'])) {
+            if (! empty($cfg['list'])) {
                 $ret[$model] = $cfg['list'];
             }
         }
@@ -603,8 +603,8 @@ class Wizard
     public function resolveColDataProp($table, $data_alias)
     {
         $conf = $this->getModelConfig($table);
-        if ($conf && !empty($conf['fields'])) {
-            if (!array_key_exists($data_alias, $conf['fields']) && !strpos($data_alias, '::')) {
+        if ($conf && ! empty($conf['fields'])) {
+            if (! array_key_exists($data_alias, $conf['fields']) && ! strpos($data_alias, '::')) {
                 return $data_alias;
             }
         }
@@ -736,7 +736,7 @@ class Wizard
     {
         $control = $class :: create();
 
-        if (!$control instanceof WizardableField) {
+        if (! $control instanceof WizardableField) {
             throw new WizardException('Invalid control class '.$class);
         }
         if (isset(self :: $controls[$control->controlType()])) {
@@ -752,7 +752,7 @@ class Wizard
 
     public static function getAvailControl($type)
     {
-        if (!isset(self :: $controls[$type])) {
+        if (! isset(self :: $controls[$type])) {
             throw new WizardException('Invalid control `'.$type.'`');
         }
 
@@ -783,7 +783,7 @@ class Wizard
         $tableModels = [];
 
         foreach ($tables as $t) {
-            if (!in_array($t, $pivotTables)) {
+            if (! in_array($t, $pivotTables)) {
                 if (isset($this->table_models[$t])) {
                     $tableModels[$t] = $this->table_models[$t];
                 } else {

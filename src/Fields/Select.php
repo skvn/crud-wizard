@@ -66,12 +66,12 @@ class Select extends \Skvn\Crud\Form\Select implements WizardableField
 
     public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
-        if (!empty($fieldConfig['property_name'])) {
+        if (! empty($fieldConfig['property_name'])) {
             $fieldKey = $fieldConfig['property_name'];
             unset($fieldConfig['property_name']);
         }
 
-        if (!empty($fieldConfig['relation'])) {
+        if (! empty($fieldConfig['relation'])) {
             if (in_array($fieldConfig['relation'], [
                 'belongsToMany',
                 'hasMany',

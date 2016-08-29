@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('arr_keyval_to_assoc')) {
+if (! function_exists('arr_keyval_to_assoc')) {
     function arr_keyval_to_assoc($arr, $key_to_col, $val_to_col)
     {
         $ret = [];
