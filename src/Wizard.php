@@ -805,7 +805,7 @@ class Wizard
         $config = [
             'model_config' => [
                 'table_columns'     => array_combine($this->getTableColumns($table), $this->getTableColumns($table)),
-                'table_int_columns' => array_combine($this->getIntTableColumns($table),$this->getIntTableColumns($table)),
+                'table_int_columns' => array_combine($this->getIntTableColumns($table), $this->getIntTableColumns($table)),
                 'find_methods'      => $this->getAvailableSelectOptionsProviders($modelConfig['name']),
                 'attrs'             => array_merge($this->getTableColumns($table), $this->getModelAccessors($modelConfig['name'])),
                 'formatters'        => $obj->getAvailFormatters(),
@@ -821,7 +821,7 @@ class Wizard
                 'track_history_options' => $this->getTrackHistoryOptions(),
                 'acls'                  => $this->app['config']['acl.acls'],
                 'relation_options'      => array_combine($this->getRelations(), $this->getRelations()),
-                'all_models'            => array_combine($this->getAvailableModels('snake_case'),$this->getAvailableModels('snake_case')),
+                'all_models'            => array_combine($this->getAvailableModels('snake_case'), $this->getAvailableModels('snake_case')),
                 'on_delete_actions'     => $this->getOndeleteActions(),
                 'pivot_tables'          => $this->getPossiblePivotTables(),
                 'field_options'         => $this->getAvailableFieldTypes(),
