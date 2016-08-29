@@ -39,7 +39,7 @@ class DateTime extends \Skvn\Crud\Form\DateTime implements WizardableField
         return 'Date + Time';
     }
 
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         $formats = $modelPrototype->wizard->getAvailableDateTimeFormats();
 

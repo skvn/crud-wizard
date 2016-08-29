@@ -80,11 +80,11 @@ trait WizardCommonFieldTrait
         return '---';
     }
 
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,   $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
     }
 
-    public function wizardCallbackModelConfig($fieldKey,  array &$modelConfig,  $modelPrototype)
+    public function wizardCallbackModelConfig($fieldKey, array &$modelConfig, $modelPrototype)
     {
     }
 

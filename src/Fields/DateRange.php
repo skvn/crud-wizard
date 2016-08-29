@@ -49,7 +49,7 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
         return 'Date range';
     }
 
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,   $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         $fieldConfig['db_type'] = $modelPrototype->column_types[$fieldConfig['fields'][0]];
         $formats = $modelPrototype->wizard->getAvailableDateTimeFormats();

@@ -2,14 +2,14 @@
 
 namespace Skvn\CrudWizard\Controllers;
 
+use Illuminate\Foundation\Application as LaravelApplication;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Skvn\Crud\Exceptions\WizardException;
 use Skvn\Crud\Models\CrudModel;
+use Skvn\CrudWizard\CrudModelPrototype;
 use Skvn\CrudWizard\Migrator;
 use Skvn\CrudWizard\Wizard;
-use Skvn\CrudWizard\CrudModelPrototype;
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Application as LaravelApplication;
 
 class WizardController extends Controller
 {

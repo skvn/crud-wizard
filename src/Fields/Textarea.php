@@ -43,7 +43,7 @@ class Textarea extends \Skvn\Crud\Form\TextArea implements WizardableField
         return 'Textarea';
     }
 
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         unset($fieldConfig['editor']);
     }
