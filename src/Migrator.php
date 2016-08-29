@@ -34,14 +34,14 @@ class Migrator
 
     public function createTable($table = null)
     {
-        if (!$table) {
+        if (! $table) {
             $table = $this->request->get('table_name');
         }
         if (empty($table)) {
             throw new WizardException('No table name specified');
         }
 
-        if (!$this->checkTableExists($table)) {
+        if (! $this->checkTableExists($table)) {
             $migration = [
                 'table_name' => $table,
                 'class'      => 'Create'.studly_case($table).'Table',
@@ -60,7 +60,7 @@ class Migrator
 
     public function createPivotTable($data)
     {
-        if (!$this->checkTableExists($data['table_name'])) {
+        if (! $this->checkTableExists($data['table_name'])) {
             $data['class'] = 'Create'.studly_case($data['table_name']).'PivotTable';
             $path = base_path().'/database/migrations/'.date('Y_m_d_His').
                 '_create_'.$data['table_name'].'_pivot_table.php';

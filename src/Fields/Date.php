@@ -40,7 +40,7 @@ class Date extends \Skvn\Crud\Form\Date implements WizardableField
         foreach ($formats as $f) {
             if ($f['php'] == $fieldConfig['format']) {
                 $fieldConfig['jsformat'] = $f['js'];
-                if (!empty($modelPrototype->column_types[$fieldKey])) {
+                if (! empty($modelPrototype->column_types[$fieldKey])) {
                     $fieldConfig['db_type'] = $modelPrototype->column_types[$fieldKey];
                 }
             }

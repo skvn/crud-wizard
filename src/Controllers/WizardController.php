@@ -48,7 +48,7 @@ class WizardController extends Controller
     public function model($table)
     {
         $model = $this->wizard->getModelConfig($table, false, false);
-        if (!$model) {
+        if (! $model) {
             $model_name = studly_case(trim($table));
             $proto = new CrudModelPrototype($table, ['name' => $model_name]);
             $proto->record();
@@ -79,7 +79,7 @@ class WizardController extends Controller
     {
         $tables = $this->request->input('models');
         foreach ($tables as $table => $model) {
-            if (!empty($model)) {
+            if (! empty($model)) {
                 $model = studly_case(trim($model));
                 $proto = new CrudModelPrototype(['name' => $model, 'table' => $table]);
                 $proto->record();
