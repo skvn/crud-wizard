@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -10,9 +9,8 @@ class Tree extends \Skvn\Crud\Form\Tree implements WizardableField
 {
     use WizardCommonFieldTrait;
 
-
     /**
-     * Returns true if the  control can be used only for relation editing only
+     * Returns true if the  control can be used only for relation editing only.
      *
      * @return bool
      */
@@ -21,24 +19,21 @@ class Tree extends \Skvn\Crud\Form\Tree implements WizardableField
         return true;
     }
 
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Tree";
+        return 'Tree';
     }
 
     /**
-     * Return an array of relations for which the control can be used
+     * Return an array of relations for which the control can be used.
      *
      * @return array
      */
-    public function wizardIsForRelations():array {
-
+    public function wizardIsForRelations():array
+    {
         return [
             'hasMany',
             'belongsToMany',
         ];
     }
-
-
 }

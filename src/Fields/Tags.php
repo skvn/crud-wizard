@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,7 +10,7 @@ class Tags extends \Skvn\Crud\Form\Tags implements WizardableField
     use WizardCommonFieldTrait;
 
     /**
-     * Returns true if the  control can be used only for relation editing only
+     * Returns true if the  control can be used only for relation editing only.
      *
      * @return bool
      */
@@ -20,24 +19,21 @@ class Tags extends \Skvn\Crud\Form\Tags implements WizardableField
         return true;
     }
 
-
     /**
-     * Return an array of relations for which the control can be used
+     * Return an array of relations for which the control can be used.
      *
      * @return array
      */
-    public function wizardIsForRelations():array {
-
+    public function wizardIsForRelations():array
+    {
         return [
             'hasMany',
             'belongsToMany',
         ];
     }
 
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Tags";
+        return 'Tags';
     }
-
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -10,58 +9,51 @@ class Textarea extends \Skvn\Crud\Form\TextArea implements WizardableField
 {
     use WizardCommonFieldTrait;
 
-
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['height'=>500, 'editor_type'=>''];
+    public function wizardConfigDefaults(): array
+    {
+        return ['height' => 500, 'editor_type' => ''];
     }
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
+    public function wizardConfigSections():array
+    {
         return [
             'required',
             'height',
-            'editor_type'
+            'editor_type',
         ];
     }
-
 
     public function wizardDbType()
     {
         return 'longText';
     }
 
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Textarea";
+        return 'Textarea';
     }
 
-
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,  $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         unset($fieldConfig['editor']);
     }
 
-    public  function wizardCallbackModelConfig($fieldKey,array &$modelConfig, $modelPrototype)
+    public function wizardCallbackModelConfig($fieldKey, array &$modelConfig, $modelPrototype)
     {
-        if (!empty($modelConfig['fields'][$fieldKey]['editor']))
-        {
-            if (!isset($modelConfig['inline_img']))
-            {
+        if (! empty($modelConfig['fields'][$fieldKey]['editor'])) {
+            if (! isset($modelConfig['inline_img'])) {
                 $modelConfig['inline_img'] = [];
-                if (!isset($modelConfig['traits']))
-                {
+                if (! isset($modelConfig['traits'])) {
                     $modelConfig['traits'] = [];
                 }
                 $modelConfig['traits'][] = 'ModelInlineImgTrait';
@@ -70,6 +62,4 @@ class Textarea extends \Skvn\Crud\Form\TextArea implements WizardableField
             $modelConfig['inline_img'][] = $fieldKey;
         }
     }
-
-
 }
