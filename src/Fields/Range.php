@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,28 +10,27 @@ class Range extends \Skvn\Crud\Form\Range implements WizardableField
     use WizardCommonFieldTrait;
 
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['fields'=>['','']];
+    public function wizardConfigDefaults(): array
+    {
+        return ['fields' => ['', '']];
     }
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
+    public function wizardConfigSections():array
+    {
         return ['required', 'range'];
     }
 
-
     /**
-     * Returns true if the  control can be used only for virtual property
+     * Returns true if the  control can be used only for virtual property.
      *
      * @return bool
      */
@@ -46,11 +44,8 @@ class Range extends \Skvn\Crud\Form\Range implements WizardableField
         return '';
     }
 
-
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Range";
+        return 'Range';
     }
-
-
 }

@@ -1,11 +1,11 @@
-<?php namespace Skvn\CrudWizard;
+<?php
+
+namespace Skvn\CrudWizard;
 
 use Illuminate\Support\ServiceProvider as LServiceProvider;
 
-
-class ServiceProvider extends LServiceProvider {
-
-
+class ServiceProvider extends LServiceProvider
+{
     public function boot()
     {
 
@@ -13,10 +13,10 @@ class ServiceProvider extends LServiceProvider {
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'wizard');
 
         //Config
-        $this->publishes([__DIR__ . '/../config/' => config_path() . "/"], 'config');
+        $this->publishes([__DIR__.'/../config/' => config_path().'/'], 'config');
 
         //Assets
-        $this->publishes([__DIR__ . '/../public/' => public_path() . "/vendor/crud-wizard/"], 'assets');
+        $this->publishes([__DIR__.'/../public/' => public_path().'/vendor/crud-wizard/'], 'assets');
 
         //Views
         $this->loadViewsFrom(__DIR__.'/../views', 'crud-wizard');
@@ -24,14 +24,12 @@ class ServiceProvider extends LServiceProvider {
 
 
         // Routing
-        include __DIR__ . DIRECTORY_SEPARATOR . 'routes.php';
-
+        include __DIR__.DIRECTORY_SEPARATOR.'routes.php';
     }
 
     protected function registerControls()
     {
-        foreach ($this->app['config']->get('crud_wizard')['wizard_controls'] as $class)
-        {
+        foreach ($this->app['config']->get('crud_wizard')['wizard_controls'] as $class) {
             Wizard :: registerControl($class);
         }
     }

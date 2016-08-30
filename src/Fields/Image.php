@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -10,14 +9,13 @@ class Image extends \Skvn\Crud\Form\Image implements WizardableField
 {
     use WizardCommonFieldTrait;
 
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Image";
+        return 'Image';
     }
 
-
     /**
-     * Returns true if the  control can be used only for relation editing only
+     * Returns true if the  control can be used only for relation editing only.
      *
      * @return bool
      */
@@ -27,12 +25,12 @@ class Image extends \Skvn\Crud\Form\Image implements WizardableField
     }
 
     /**
-     * Return an array of relations for which the control can be used
+     * Return an array of relations for which the control can be used.
      *
      * @return array
      */
-    public function wizardIsForRelations():array {
-
+    public function wizardIsForRelations():array
+    {
         return [
             'hasFile',
         ];

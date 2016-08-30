@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Skvn\CrudWizard\Fields;
 
 use Skvn\CrudWizard\Contracts\WizardableField;
@@ -11,23 +10,23 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
     use WizardCommonFieldTrait;
 
     /**
-     * Get Wizard config defaults
+     * Get Wizard config defaults.
      *
      * @return array
      */
-    public function wizardConfigDefaults(): array {
-
-        return ['format'=>'d.m.Y H:i','fields'=>['','']];
+    public function wizardConfigDefaults(): array
+    {
+        return ['format' => 'd.m.Y H:i', 'fields' => ['', '']];
     }
 
     /**
-     * Return wizard config sections
+     * Return wizard config sections.
      *
      * @return array
      */
-    public function wizardConfigSections():array {
-
-        return ['required','date_time_format', 'range'];
+    public function wizardConfigSections():array
+    {
+        return ['required', 'date_time_format', 'range'];
     }
 
     public function wizardDbType()
@@ -35,9 +34,8 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
         return '';
     }
 
-
     /**
-     * Returns true if the  control can be used only for virtual property
+     * Returns true if the  control can be used only for virtual property.
      *
      * @return bool
      */
@@ -46,13 +44,12 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
         return true;
     }
 
-    function wizardCaption()
+    public function wizardCaption()
     {
-        return "Date range";
+        return 'Date range';
     }
 
-
-    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig,   $modelPrototype)
+    public function wizardCallbackFieldConfig(&$fieldKey, array &$fieldConfig, $modelPrototype)
     {
         $fieldConfig['db_type'] = $modelPrototype->column_types[$fieldConfig['fields'][0]];
         $formats = $modelPrototype->wizard->getAvailableDateTimeFormats();
@@ -60,11 +57,7 @@ class DateRange extends \Skvn\Crud\Form\DateRange implements WizardableField
         foreach ($formats as $f) {
             if ($f['php'] == $fieldConfig['format']) {
                 $fieldConfig['jsformat'] = $f['js'];
-
             }
         }
-
     }
-
-
 }

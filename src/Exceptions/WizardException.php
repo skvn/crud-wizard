@@ -1,6 +1,7 @@
-<?php namespace Skvn\CrudWizard\Exceptions;
+<?php
 
+namespace Skvn\CrudWizard\Exceptions;
 
-class WizardException extends \Exception {
-
-} 
+class WizardException extends \Exception
+{
+}
